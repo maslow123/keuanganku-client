@@ -1,0 +1,16 @@
+.label {
+    @apply xs:text-xs text-left text-sm block text-gray-700 font-bold mb-2;
+};
+
+.formInput {
+    @apply xs:text-xs text-sm shadow appearance-none border rounded w-full h-12 py-2 px-3 text-gray-700 border-b 
+        hover:border-teal-700;
+};
+
+.checkbox {
+    @apply h-5 w-5;
+};
+
+.checkmark {
+    @apply h-5 w-5;
+};

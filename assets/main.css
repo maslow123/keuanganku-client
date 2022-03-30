@@ -1,0 +1,28 @@
+@import "./base.css";
+@import "./form.css";
+
+
+@font-face {
+  font-family: 'Poppins';
+  src: url('../public/fonts/Poppins-Medium.ttf');
+}
+
+html,
+body,
+body > div:first-child,
+div#__next,
+div#__next > div {
+    height: 100%;
+    font-family: 'Poppins';
+    
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+    .fit {
+        min-height: calc(100vh - 88px);
+    }
+}

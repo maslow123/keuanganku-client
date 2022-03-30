@@ -1,0 +1,40 @@
+.wrapper {
+    @apply flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none;
+}
+
+.container {
+    @apply w-full relative;
+}
+
+.content {
+    @apply h-full border-0 rounded-lg shadow-lg relative flex flex-col 
+        w-full bg-blue outline-none focus:outline-none;
+}
+
+.contentWrapper {
+    @apply relative p-6 flex-auto;    
+}
+
+.text {
+    @apply w-1/2 text-center xs:w-full;
+}
+.textTitle {
+    @apply font-bold uppercase tracking-widest text-2xl text-center;
+}
+.textContent{
+    @apply text-slate-500 text-lg leading-relaxed;
+}
+
+.image {
+    @apply flex justify-center items-center flex-col;
+}
+
+.footer {
+    @apply flex items-center justify-end p-6 rounded-b;
+}
+
+.footerButton {
+    @apply bg-transparent text-white font-bold uppercase text-sm px-6 py-3  
+    rounded shadow outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150
+    tracking-widest;
+}

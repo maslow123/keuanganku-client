@@ -1,0 +1,7 @@
+.wrapper {
+    @apply flex uppercase font-bold text-gray-700;
+}
+.image {
+    border-radius: 50%;
+    @apply w-10;
+}
