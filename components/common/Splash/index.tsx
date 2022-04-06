@@ -1,10 +1,11 @@
+import { useAuth } from "context/auth";
 import Image from "next/image";
 import React from "react";
 import { images } from "util/images";
 import s from './Splash.module.css';
 
 export default function Splash() {
-
+  const ctx = useAuth();    
   const [showModal, setShowModal] = React.useState(true);
   return (
     <>
@@ -39,7 +40,10 @@ export default function Splash() {
                   <button
                     className={s.footerButton}
                     type="button"
-                    onClick={() => setShowModal(false)}
+                    onClick={() => {
+                      ctx.setSplashScreen(true);
+                      setShowModal(false);
+                    }}
                   >
                     Lanjut ke halaman login
                   </button>

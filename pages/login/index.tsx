@@ -1,20 +1,70 @@
 import { Splash } from '@components/common';
 import { Form } from '@components/ui';
+import Badge from '@components/ui/Badge';
+import { status } from '@lib/constants';
+import { useAuth } from 'context/auth';
 import Image from 'next/image';
 import Link from 'next/link';
-import React, { Component, useState } from 'react';
-import { hasError } from 'util/helper';
+import React, { useEffect, useState } from 'react';
+import { LoginResponse } from 'services/types/users';
+import { loginUser } from 'services/users';
+import { hasError, validate } from 'util/helper';
 import { images } from 'util/images';
 import s from './Login.module.css';
 
 export default function Login() {
+    const ctx = useAuth();
+
     const [payload, setPayload] = useState<any>({
         email: '',
         password: ''
     });    
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [errorList, setErrorList] = useState<string[]>(null);
+    const [errorMessage, setErrorMessage] = useState<string>('');
+    const [invalid, setInvalid] = useState<boolean>(false);
     const [invalidEmailFormat, setInvalidEmailFormat] = useState<boolean>(false);
+
+    
+    const _handleChange = (evt): void => {
+        const value = evt.target.value;
+        const name = evt.target.name;
+
+        setPayload({ ...payload, [name]: value });
+    };
+
+    const _handleSubmit = async (e): Promise<boolean> => {
+        e.preventDefault();
+        setInvalidEmailFormat(false);
+
+        let error = '';
+        const errors = validate(payload);
+        console.log(errors);
+        const invalidEmail = errors.find(err => err === 'invalid-format-email');
+        if (invalidEmail) {
+            setInvalidEmailFormat(true);
+        }
+
+        setErrorList(errors);
+        if (errors.length > 0) { return false };
+        
+        setIsLoading(true);
+        const resp: LoginResponse = await loginUser(payload);
+        console.log(resp);
+        setIsLoading(false);
+
+        let isValid = false;
+        if (resp.status !== status.OK) {
+            isValid = true;
+            error = resp.error;
+        }
+
+        setErrorMessage(error);
+        setInvalid(isValid);
+
+        if (error) { return false };
+        return true;   
+    }
 
     const form = [
         {
@@ -30,8 +80,9 @@ export default function Login() {
     ];
 
     return (
-        <>
-            <Splash />
+        <>  
+            {!ctx.splashScreen && <Splash/>}
+
             <div className={s.parent}>                
                 <div className={s.leftpane}>
                     <div className={s.image}>  
@@ -56,8 +107,11 @@ export default function Login() {
                     </div>
                     <div className={s.welcomeWrapper}>
                         <span className={s.welcomeText}>Selamat Datang</span>                
-                        <div className={s.loginFormWrapper}>                               
-                            <form className={s.form} onSubmit={() => {}}>                        
+                        <div className={s.loginFormWrapper}>   
+                            {invalid && (
+                                <Badge caption={errorMessage} color="error"/>
+                            )}                              
+                            <form className={s.form} onSubmit={_handleSubmit}>                        
                                 {form.map((item, i) => (
                                     <Form
                                         disabled={false}
@@ -66,7 +120,7 @@ export default function Login() {
                                         name={item.name}
                                         type={item.type}
                                         required
-                                        handleChange={() => {}}
+                                        handleChange={_handleChange}
                                         hasError={hasError(errorList, item.name)}
                                         errorMessage={item.name === 'email' && invalidEmailFormat ? 'Kesalahan pada format Email' : '' }
                                     />

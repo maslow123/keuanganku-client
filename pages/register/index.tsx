@@ -1,24 +1,76 @@
 import { Form } from '@components/ui';
+import Badge from '@components/ui/Badge';
+import { status } from '@lib/constants';
 import Image from 'next/image';
 import Link from 'next/link';
 import React, { useState } from 'react';
-import { hasError } from 'util/helper';
+import { RegisterRequest, RegisterResponse } from 'services/types/users';
+import { registerUser } from 'services/users';
+import { hasError, validate } from 'util/helper';
 import { images } from 'util/images';
 import s from './Register.module.css';
 
 export default function Login() {
-    const [payload, setPayload] = useState<any>({
+    const [payload, setPayload] = useState<RegisterRequest>({
+        name: '',
         email: '',
-        password: ''
+        password: '',
+        confirm_password: ''
     });    
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [errorList, setErrorList] = useState<string[]>(null);
+    const [errorMessage, setErrorMessage] = useState<string>('');
+    const [invalid, setInvalid] = useState<boolean>(false);
     const [invalidEmailFormat, setInvalidEmailFormat] = useState<boolean>(false);
+    const [passwordNotMatch, setPasswordNotMatch] = useState<boolean>(false);
 
+    const _handleChange = (evt): void => {
+        const value = evt.target.value;
+        const name = evt.target.name;
+
+        setPayload({ ...payload, [name]: value });
+    };
+
+    const _handleSubmit = async (e): Promise<boolean> => {
+        e.preventDefault();
+        setInvalidEmailFormat(false);
+        setPasswordNotMatch(false);
+
+        let error = '';
+        const errors = validate(payload);
+        const invalidEmail = errors.find(err => err === 'invalid-format-email');
+        if (invalidEmail) {
+            setInvalidEmailFormat(true);
+        }
+        const passwordNotMatch = errors.find(err => err === 'password-not-match');
+        if (passwordNotMatch) {
+            setPasswordNotMatch(true);
+        }
+        
+        setErrorList(errors);
+        if (errors.length > 0) { return false };
+        
+        setIsLoading(true);
+        const resp: RegisterResponse = await registerUser(payload);
+        setIsLoading(false);
+
+        let isValid = false;
+        if (resp.status !== status.OK) {
+            isValid = true;
+            error = resp.error;
+        }
+
+        setErrorMessage(error);
+        setInvalid(isValid);
+
+        if (error) { return false };
+        return true;   
+    };
+    
     const form = [
         {
             label: 'Nama',
-            name: 'nama',
+            name: 'name',
             type: 'text'
         },
         {
@@ -29,6 +81,11 @@ export default function Login() {
         {
             label: 'Password',
             name: 'password',
+            type: 'password'
+        },
+        {
+            label: 'Konfirmasi Password',
+            name: 'confirm_password',
             type: 'password'
         }
     ];
@@ -59,8 +116,11 @@ export default function Login() {
                     </div>
                     <div className={s.welcomeWrapper}>
                         <span className={s.welcomeText}>Daftar</span>                
-                        <div className={s.loginFormWrapper}>                               
-                            <form className={s.form} onSubmit={() => {}}>                        
+                        <div className={s.loginFormWrapper}>      
+                            {invalid && (
+                                <Badge caption={errorMessage} color="error"/>
+                            )}                           
+                            <form className={s.form} onSubmit={_handleSubmit}>                        
                                 {form.map((item, i) => (
                                     <Form
                                         disabled={false}
@@ -69,9 +129,15 @@ export default function Login() {
                                         name={item.name}
                                         type={item.type}
                                         required
-                                        handleChange={() => {}}
+                                        handleChange={_handleChange}
                                         hasError={hasError(errorList, item.name)}
-                                        errorMessage={item.name === 'email' && invalidEmailFormat ? 'Kesalahan pada format Email' : '' }
+                                        errorMessage={                                         
+                                            item.name === 'email' && invalidEmailFormat 
+                                            ? 'Kesalahan pada format Email' 
+                                            : item.name === 'confirm_password' && passwordNotMatch
+                                                ? 'Password tidak sesuai, harap periksa kembali'
+                                                : '' 
+                                        }
                                     />
                                 ))}
                                 <button className="bg-red rounded-full py-2 px-5 h-10 mb-3" disabled={isLoading}>

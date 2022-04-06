@@ -8,12 +8,12 @@ const AuthContext = createContext({});
 export default function AuthProvider({ children }) {
 
     const router = useRouter();
-    const [user, setUser] = useState(null)
-    const [loading, setLoading] = useState(true)
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [splashScreen, setSplashScreen] = useState(false);
     
     useEffect(() => {
-        async function loadUserFromCookies() {
-
+        async function loadUserFromCookies() {            
             const token = Cookies.get('token');
             let user: any = {};
 
@@ -31,7 +31,7 @@ export default function AuthProvider({ children }) {
     }, [])
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated: !!user, user, loading }}>
+        <AuthContext.Provider value={{ isAuthenticated: !!user, user, loading, splashScreen, setSplashScreen }}>
             {children}
         </AuthContext.Provider>
     )

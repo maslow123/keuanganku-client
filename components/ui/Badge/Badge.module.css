@@ -1,0 +1,5 @@
+.error {
+    @apply text-black text-sm mr-2 rounded w-5 py-3 block;
+    width: 92%;
+    margin-left: 30px;
+}
