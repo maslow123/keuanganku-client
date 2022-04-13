@@ -20,7 +20,8 @@
       "@common/*": ["framework/common/*"],
       "@components/*": ["components/*"],
       "@assets/*": ["assets/*"],
-      "@lib/*": ["lib/*"]
+      "@lib/*": ["lib/*"],
+      "@util/*": ["util/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],

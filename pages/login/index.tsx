@@ -5,12 +5,13 @@ import { status } from '@lib/constants';
 import { useAuth } from 'context/auth';
 import Image from 'next/image';
 import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { LoginResponse } from 'services/types/users';
 import { loginUser } from 'services/users';
 import { hasError, validate } from 'util/helper';
 import { images } from 'util/images';
 import s from './Login.module.css';
+import Cookies from 'js-cookie';
 
 export default function Login() {
     const ctx = useAuth();
@@ -62,6 +63,7 @@ export default function Login() {
         setErrorMessage(error);
         setInvalid(isValid);
 
+        Cookies.set('token', resp.token);
         if (error) { return false };
         return true;   
     }

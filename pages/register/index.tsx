@@ -23,6 +23,7 @@ export default function Login() {
     const [invalid, setInvalid] = useState<boolean>(false);
     const [invalidEmailFormat, setInvalidEmailFormat] = useState<boolean>(false);
     const [passwordNotMatch, setPasswordNotMatch] = useState<boolean>(false);
+    const [registerSuccess, setRegisterSuccess] = useState<boolean>(false);
 
     const _handleChange = (evt): void => {
         const value = evt.target.value;
@@ -55,18 +56,31 @@ export default function Login() {
         setIsLoading(false);
 
         let isValid = false;
-        if (resp.status !== status.OK) {
+        let registerSuccess = true;
+        if (resp.status !== status.Created) {
             isValid = true;
             error = resp.error;
+            registerSuccess = false;
         }
 
+        const p = await resetPayload(payload);
+        setRegisterSuccess(registerSuccess);
         setErrorMessage(error);
         setInvalid(isValid);
+        setPayload({ ...p });
+        
 
         if (error) { return false };
         return true;   
     };
     
+    const resetPayload = (payload: RegisterRequest): RegisterRequest => {
+        for (let p of Object.keys(payload)) {
+            payload[p] = '';
+        }
+
+        return payload;
+    }
     const form = [
         {
             label: 'Nama',
@@ -119,7 +133,10 @@ export default function Login() {
                         <div className={s.loginFormWrapper}>      
                             {invalid && (
                                 <Badge caption={errorMessage} color="error"/>
-                            )}                           
+                            )}            
+                            {registerSuccess && (
+                                <Badge caption={'Selamat, kamu berhasil mendaftar. Silakan lakukan login.'} color="success"/>
+                            )}               
                             <form className={s.form} onSubmit={_handleSubmit}>                        
                                 {form.map((item, i) => (
                                     <Form
@@ -128,6 +145,7 @@ export default function Login() {
                                         label={item.label}
                                         name={item.name}
                                         type={item.type}
+                                        value={payload[item.name]}
                                         required
                                         handleChange={_handleChange}
                                         hasError={hasError(errorList, item.name)}

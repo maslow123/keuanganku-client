@@ -23,5 +23,4 @@ export interface RegisterRequest {
     confirm_password: string;
 }
 
-export interface RegisterResponse extends GenericResponse, User {
-}
+export interface RegisterResponse extends GenericResponse, User {}

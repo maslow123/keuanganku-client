@@ -1,7 +1,7 @@
 import { useAuth } from "context/auth";
 import Image from "next/image";
 import React from "react";
-import { images } from "util/images";
+import { images } from "@util/images";
 import s from './Splash.module.css';
 
 export default function Splash() {

@@ -1,0 +1,36 @@
+.headerWrapper {
+    @apply flex flex-row justify-between;
+}
+/* Left header */
+.leftHeader {
+    @apply flex flex-row;
+}
+
+.avatar {
+    @apply justify-center self-center pr-6;
+}
+
+.sectionName {
+    @apply flex-col;
+}
+
+.name {
+    @apply font-bold;
+}
+
+.greeting {
+    @apply text-gray-500
+}
+
+/* RIght header */
+.rightHeader {
+    @apply flex flex-row;
+}
+
+.settingButton, .notificationButton{
+    @apply  flex bg-gray-100 w-10 h-10 rounded-full justify-center items-center;
+}
+
+.settingButton {
+    @apply mr-5;
+}

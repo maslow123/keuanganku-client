@@ -70,7 +70,8 @@ module.exports = {
         rose: '#F7D4E0',
         pink: '#FD7AC0',
         blue: '#7AD7F0',
-        turquoise: '#44C8E0'
+        turquoise: '#44C8E0',
+        blue_contrass: '#1555B6'
       },
       textColor: {
         base: 'var(--text-base)',
