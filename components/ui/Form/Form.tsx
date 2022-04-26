@@ -1,5 +1,6 @@
 import { ChangeEventHandler, FC, MouseEventHandler } from "react";
 import s from './Form.module.css';
+import Select from "./Select";
 
 interface Props {
     label: string;
@@ -12,9 +13,11 @@ interface Props {
     errorMessage?: string;
     value?: string | number | readonly string[];
     isChecked?: boolean;
+    list?: Record<string, any>
+    colors?: string[];
 };
 
-const Form:FC<Props> = ({ label, required, name, type, hasError, disabled, handleChange, errorMessage, value, isChecked }) => {
+const Form:FC<Props> = ({ label, required, name, type, hasError, disabled, handleChange, errorMessage, value, isChecked, list, colors }) => {
 
     const generateForm = () => {
         switch(type) {
@@ -57,14 +60,49 @@ const Form:FC<Props> = ({ label, required, name, type, hasError, disabled, handl
                         />
                         <span className={s.checkmark}></span>
                     </>
-                );            
+                ); 
+            case 'select':
+                return (
+                    <Select
+                        value={value}
+                        handleChange={e => {
+                            e.field = name;
+                            handleChange(e);
+                        }}
+                        list={list}
+                    />
+                );           
+            case 'color':
+                return (
+                    <div className="flex">
+                        {
+                            colors.map(color => (
+                                <div key={color}>
+                                    <button 
+                                        name={name}
+                                        type="button"
+                                        className="rounded-full w-8 h-8 mr-3 border-2" 
+                                        style={{ 
+                                            background: color, 
+                                            borderColor: value === color ? 'grey' : 'white'
+                                        }}
+                                        onClick={(e: any) => {
+                                            e.target.value = color;                                        
+                                            handleChange(e);
+                                        }}
+                                    />
+                                </div>
+                            ))
+                        }
+                    </div>
+                );
             default:
                 return null
         }
     };
 
     return (
-        <div className="mb-6">
+        <div className={`mb-6`}>
             <label className={s.label}>
                 {required && (<span className="text-red">* </span>)}
                 {label}

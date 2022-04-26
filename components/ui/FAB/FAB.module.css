@@ -1,0 +1,9 @@
+.fabWrapper {
+    /* @apply flex justify-center items-center; */
+    @apply fixed right-24 bottom-24 xs:right-14 bottom-10 z-50 border-double;
+
+}
+
+.fabButton {
+    @apply p-0 w-16 h-16 bg-blue-theme rounded-full active:shadow-lg shadow;
+}

@@ -4,4 +4,14 @@ const status = {
     BadRequest: 400
 };
 
-export { status };
+const transaction_type = {
+    0: 'Cash',
+    1: 'Transfer'
+};
+
+const pos_type = {
+    inflow: 0,
+    outflow: 1
+};
+
+export { status, transaction_type, pos_type };

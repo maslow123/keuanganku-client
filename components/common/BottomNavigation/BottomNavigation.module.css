@@ -1,0 +1,14 @@
+.wrapper {
+    @apply fixed bottom-0 w-full;
+}
+.container {
+    @apply flex flex-row justify-around bg-black-theme;
+    height: auto !important;
+}
+
+.section {
+    @apply flex flex-col justify-center items-center;
+}
+.icon, .route {
+    @apply text-xs py-1 pt-2;
+}

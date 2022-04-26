@@ -1,3 +1,6 @@
+import Cookies from 'js-cookie';
+import { headers } from 'services/headers';
+
 const hasError = (errors: string[], key: string): Boolean => {
     const invalidEmail = 
         (errors?.length > 0 && errors.find(err => err !== 'email') && errors.find(err => err === 'invalid-format-email')) 
@@ -50,8 +53,25 @@ const validate = (payload: any, noError: any = [] ): any => {
     return errors;
 };
 
+const classNames = (...classes: any) => {
+    console.log('classes: ', ...classes)
+    return classes.filter(Boolean).join(' ')
+};
+
+const formatMoney = (number: number): string => {    
+    return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR" }).format(number);
+};
+
+const getToken = () => {
+    const token = Cookies.get('token');
+    headers.headers.authorization = `Bearer ${token}`;
+};
+
 export {
     hasError,
     checkEmailFormat,
-    validate
+    validate,
+    classNames,
+    formatMoney,
+    getToken
 };

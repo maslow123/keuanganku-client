@@ -1,0 +1,22 @@
+.wrapper {
+    @apply  flex bg-gray-100 w-11 h-11 rounded-full justify-center items-center;
+}
+
+.title {
+    @apply py-4 text-3xl font-bold tracking-wider;
+}
+
+.content {
+    
+}
+/* Inside card */
+.posName {
+    @apply font-bold text-xl uppercase;
+}
+
+.posTotal {
+    @apply text-lg;
+}
+.detailTransaction {
+    @apply text-xs self-end px-3 py-3;
+}

@@ -21,6 +21,6 @@ export interface RegisterRequest {
     email: string;
     password: string;
     confirm_password: string;
-}
+};
 
 export interface RegisterResponse extends GenericResponse, User {}

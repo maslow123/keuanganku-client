@@ -12,6 +12,7 @@ import { hasError, validate } from 'util/helper';
 import { images } from 'util/images';
 import s from './Login.module.css';
 import Cookies from 'js-cookie';
+import Router from 'next/router';
 
 export default function Login() {
     const ctx = useAuth();
@@ -64,6 +65,7 @@ export default function Login() {
         setInvalid(isValid);
 
         Cookies.set('token', resp.token);
+        Router.push('/dashboard');
         if (error) { return false };
         return true;   
     }

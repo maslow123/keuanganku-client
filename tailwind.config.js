@@ -71,7 +71,8 @@ module.exports = {
         pink: '#FD7AC0',
         blue: '#7AD7F0',
         turquoise: '#44C8E0',
-        blue_contrass: '#1555B6'
+        'blue-theme': '#1555B6',
+        'black-theme': '#212226'
       },
       textColor: {
         base: 'var(--text-base)',
