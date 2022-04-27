@@ -1,4 +1,6 @@
 import { FC, ReactNode, useState } from "react";
+import { classNames } from '@util/helper';
+import s from './Tabs.module.css';
 
 interface Props {
     titles: string[];
@@ -41,9 +43,9 @@ const Tabs:FC<Props> = ({ tabs, titles, handleChangeTab }) => {
                     ))}
                 </ul>
             </div>
-            <div className="relative flex flex-col min-w-0 break-words bg-white w-full mb-6 rounded">              
+            <div className={s.contentWrapper}>              
                 {tabs.map((item, key) => (
-                    <div key={key} className={openTab === (key + 1) ? 'block' : 'hidden'} id="link1">
+                    <div key={key} className={`${classNames(s.content, openTab === (key + 1) ? 'block' : 'hidden')}`} id="link1">
                         {item}
                     </div>                    
                 ))}
