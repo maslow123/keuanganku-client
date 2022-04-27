@@ -1,4 +1,5 @@
 import Cookies from 'js-cookie';
+import { toast } from 'react-toastify';
 import { headers } from 'services/headers';
 
 const hasError = (errors: string[], key: string): Boolean => {
@@ -54,7 +55,6 @@ const validate = (payload: any, noError: any = [] ): any => {
 };
 
 const classNames = (...classes: any) => {
-    console.log('classes: ', ...classes)
     return classes.filter(Boolean).join(' ')
 };
 
@@ -67,11 +67,16 @@ const getToken = () => {
     headers.headers.authorization = `Bearer ${token}`;
 };
 
+const showToast = (type: string, message: string) => {    
+    toast[type](message);
+};
+
 export {
     hasError,
     checkEmailFormat,
     validate,
     classNames,
     formatMoney,
-    getToken
+    getToken,
+    showToast
 };

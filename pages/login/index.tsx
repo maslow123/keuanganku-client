@@ -52,7 +52,6 @@ export default function Login() {
         
         setIsLoading(true);
         const resp: LoginResponse = await loginUser(payload);
-        console.log(resp);
         setIsLoading(false);
 
         let isValid = false;
@@ -86,7 +85,6 @@ export default function Login() {
     return (
         <>  
             {!ctx.splashScreen && <Splash/>}
-
             <div className={s.parent}>                
                 <div className={s.leftpane}>
                     <div className={s.image}>  

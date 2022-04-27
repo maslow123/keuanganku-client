@@ -11,14 +11,21 @@ interface Pos {
 };
 
 export interface ListPosRequest {    
-    page: number
+    page: number;
     limit: number;
+    type: number;
 };
 
 export interface ListPosResponse extends ListPosRequest, GenericResponse {
     pos: Pos[];
 };
 
-export interface CreatePos extends GenericResponse {
+export interface CreatePosRequest {
+    name: string;
+    type: 0 | 1;
+    color: string;
+};
+
+export interface CreatePosResponse extends GenericResponse {
     id: number;
 };

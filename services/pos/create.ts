@@ -1,10 +1,14 @@
-import { RegisterRequest, RegisterResponse } from "services/types/users";
+import { getToken } from "@util/helper";
+import { headers } from "services/headers";
+import { CreatePosRequest, CreatePosResponse } from "services/types/pos";
 
-const registerUser = async (payload: RegisterRequest): Promise<RegisterResponse> => {
+const create = async (payload: CreatePosRequest): Promise<CreatePosResponse> => {
     try {
-        const data = await fetch('http://localhost:3000/users/register', {
+        getToken();
+        const data = await fetch('http://localhost:3000/pos/create', {
             method: 'POST',
-            body: JSON.stringify(payload)
+            body: JSON.stringify(payload),
+            ...headers
         });
 
         const json = await data.json();
@@ -14,4 +18,4 @@ const registerUser = async (payload: RegisterRequest): Promise<RegisterResponse>
     }
 };
 
-export default registerUser;
+export default create;

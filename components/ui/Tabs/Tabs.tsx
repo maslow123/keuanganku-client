@@ -3,9 +3,10 @@ import { FC, ReactNode, useState } from "react";
 interface Props {
     titles: string[];
     tabs: ReactNode[];
+    handleChangeTab: Function;
 };
 
-const Tabs:FC<Props> = ({ tabs, titles }) => {
+const Tabs:FC<Props> = ({ tabs, titles, handleChangeTab }) => {
     const [openTab, setOpenTab] = useState(1);
     return (
         <div className="flex flex-wrap mt-4">
@@ -25,8 +26,9 @@ const Tabs:FC<Props> = ({ tabs, titles }) => {
                                         : "text-gray-500 bg-white")
                                     }
                                     onClick={e => {
-                                    e.preventDefault();
-                                    setOpenTab(key + 1);
+                                        e.preventDefault();
+                                        setOpenTab(key + 1);
+                                        handleChangeTab(key + 1);
                                     }}
                                     data-toggle="tab"
                                     href="#link1"
@@ -41,11 +43,9 @@ const Tabs:FC<Props> = ({ tabs, titles }) => {
             </div>
             <div className="relative flex flex-col min-w-0 break-words bg-white w-full mb-6 rounded">              
                 {tabs.map((item, key) => (
-                    <>                    
-                        <div className={openTab === (key + 1) ? 'block' : 'hidden'} id="link1">
-                            {item}
-                        </div>
-                    </>
+                    <div key={key} className={openTab === (key + 1) ? 'block' : 'hidden'} id="link1">
+                        {item}
+                    </div>                    
                 ))}
             </div>
         </div>

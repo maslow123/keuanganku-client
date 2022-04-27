@@ -1,3 +1,6 @@
+.wrapper {
+    border: 1px solid red;
+}
 .parent {
     @apply grid grid-cols-2 h-full;
 }

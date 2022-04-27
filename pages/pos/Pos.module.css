@@ -2,14 +2,26 @@
     @apply  flex bg-gray-100 w-11 h-11 rounded-full justify-center items-center;
 }
 
+.header {
+    
+}
+
 .title {
     @apply py-4 text-3xl font-bold tracking-wider;
 }
 
 .content {
-    
+    @apply pb-10;
+}
+.cardWrapper {
+    border: 1px solid red;
+    @apply fixed overflow-scroll h-1/2;
 }
 /* Inside card */
+.posIdentity {
+    @apply flex flex-col;
+}
+
 .posName {
     @apply font-bold text-xl uppercase;
 }
@@ -17,6 +29,14 @@
 .posTotal {
     @apply text-lg;
 }
-.detailTransaction {
-    @apply text-xs self-end px-3 py-3;
+
+.actionButtonWrapper {
+    @apply text-xs px-3 py-3 flex flex-row justify-end;
+}
+
+.loadButtonWrapper {
+    @apply flex justify-center;
+}
+.loadButton {
+    @apply p-0 w-16 h-16 bg-blue-theme rounded-full active:shadow-lg shadow flex justify-center items-center text-white;
 }
