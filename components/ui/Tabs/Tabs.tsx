@@ -1,4 +1,4 @@
-import { FC, ReactNode, useState } from "react";
+import { CSSProperties, FC, ReactNode, useState } from "react";
 import { classNames } from '@util/helper';
 import s from './Tabs.module.css';
 
@@ -6,9 +6,10 @@ interface Props {
     titles: string[];
     tabs: ReactNode[];
     handleChangeTab: Function;
+    style?: CSSProperties;
 };
 
-const Tabs:FC<Props> = ({ tabs, titles, handleChangeTab }) => {
+const Tabs:FC<Props> = ({ tabs, titles, handleChangeTab, style }) => {
     const [openTab, setOpenTab] = useState(1);
     return (
         <div className="flex flex-wrap mt-4">
@@ -18,7 +19,7 @@ const Tabs:FC<Props> = ({ tabs, titles, handleChangeTab }) => {
                     role="tablist"
                 >
                     {titles.map((item, key) => (
-                        <>
+                        <div key={key}>
                             <li className={`flex-auto text-center ${key !== item.length - 1 && 'pr-3'}`}>
                                 <a
                                     className={
@@ -39,11 +40,11 @@ const Tabs:FC<Props> = ({ tabs, titles, handleChangeTab }) => {
                                     {item}
                                 </a>
                             </li>
-                        </>
+                        </div>
                     ))}
                 </ul>
             </div>
-            <div className={s.contentWrapper}>              
+            <div className={s.contentWrapper} style={style}>              
                 {tabs.map((item, key) => (
                     <div key={key} className={`${classNames(s.content, openTab === (key + 1) ? 'block' : 'hidden')}`} id="link1">
                         {item}

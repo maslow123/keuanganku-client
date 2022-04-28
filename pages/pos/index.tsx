@@ -8,8 +8,8 @@ import { Card, FAB, Form, Modal, Tabs } from '@components/ui';
 import { formatMoney, hasError, showToast, validate } from '@util/helper';
 import { pos_type, status } from '@lib/constants';
 import { Colors } from '@lib/colors';
-import { create, list } from 'services/pos';
-import { CreatePosRequest, CreatePosResponse, ListPosRequest, ListPosResponse } from 'services/types/pos';
+import { create, list, update, deletePos } from 'services/pos';
+import { CreatePosRequest, CreatePosResponse, DeletePosRequest, ListPosRequest, ListPosResponse, UpdatePosRequest, UpdatePosResponse } from 'services/types/pos';
 
 export default function Pos() { 
     const actionButton: JSX.Element[] = [
@@ -30,19 +30,23 @@ export default function Pos() {
         type: 1
     });
 
-    const [payload, setPayload] = useState<CreatePosRequest>({
+    const [payload, setPayload] = useState<UpdatePosRequest | CreatePosRequest>({
         name: '',
         type: 0,
         color: ''
     });
+
     const [isLoading, setIsLoading] = useState<Record<string, boolean>>({
         list: false,
         create: false
     });
-    const [notFound, setNotFound] = useState<boolean>(false);
+    const [posInflowNotFound, setPosInflowNotFound] = useState<boolean>(false);
+    const [posOutflowNotFound, setPosOutflowNotFound] = useState<boolean>(false);
     const [errorList, setErrorList] = useState<string[]>(null);
     const [type, setType] = useState<number>(pos_type.inflow);
     const [isVisible, setIsVisible] = useState<boolean>(false);
+    const [modalDeleteVisible, setModalDeleteVisible] = useState<boolean>(false);
+    const [action, setAction] = useState<string>('add');
     const router = useRouter();
     let colorList = [];
     for (let prop of Object.keys(Colors)) {
@@ -87,31 +91,91 @@ export default function Pos() {
         return;
     }, []);
 
-    const fetchData = async (q: ListPosRequest, afterInsert: boolean = false) => {   
-        const setData = q.type === 0 ? setPosInflowList : setPosOutflowList;
+    const fetchData = async (q: ListPosRequest, afterUpsert: boolean = false) => {   
+        const { setNotFound, dataList, setDataList } = getCurrentTabData(q.type);
 
         setLoading('list', true);                
-        const data = await list(q);
-        if (data.status === status.NotFound) {
+        const newData = await list(q);
+        if (newData.status === status.NotFound) {
             setNotFound(true);
+            if (q.page === 1) {
+                setDataList(null);
+            }
             return
         }
         setLoading('list', false);
-        if (afterInsert) {
-            setData({ ...data });
+
+        if (afterUpsert) {
+            if (dataList?.pos?.length > 10 && q.page > 1) {
+                const currentPos = setPos(q.page - 1, dataList, newData);
+                setDataList({
+                    ...newData,
+                    pos: [...currentPos]
+                });
+                return
+            }
+            setDataList({ ...newData });
         }
-        if (posInflowList?.pos?.length > 0 && !afterInsert) {
-            const currentPos = [...posInflowList.pos, ...data.pos]
-            setData({
-                ...data,
-                pos: currentPos
+
+        if (dataList?.pos?.length > 0 && !afterUpsert) {
+            const currentPos = setPos(q.page, dataList, newData);
+            setDataList({
+                ...newData,
+                pos: [...currentPos]
             });
 
             setNotFound(false);
-
             return
         }
-        setData(data);
+        setDataList(newData);
+    };
+
+    const upsert = async (p: CreatePosRequest | UpdatePosRequest) => {
+        if (action === 'add') {
+            const resp: CreatePosResponse = await create(p);
+            return resp;
+        }
+        const resp: UpdatePosResponse = await update(p);
+        return resp;
+
+    };
+
+    const doDeletePos = async (e) => {
+        e.preventDefault();
+        
+        const param = { id: payload.id };
+        const resp: any = await deletePos(param);
+        if (resp.status === status.OK) {
+            resetPayload();
+            setModalDeleteVisible(false)            
+            showToast('success', `Delete POS successfully`);
+            const { currentQuery, posNotFound, setNotFound } = getCurrentTabData(payload.type);            
+            if (posNotFound && currentQuery.page > 1) {
+                currentQuery.page -= 1;
+                setNotFound(false);
+            }
+
+            fetchData(currentQuery, true);
+        }
+    };
+
+    const setPos = (page: number, dataList: ListPosResponse, data: ListPosResponse) => {
+        const currentTotalData = page * 10;             
+        dataList.pos = dataList.pos.slice(0, currentTotalData)            
+        const currentPos = [...dataList.pos, ...data.pos];
+
+        return currentPos;
+    };
+
+    const getCurrentTabData = (posType: number) => {
+        return {
+            posNotFound: posType === pos_type.inflow ? posInflowNotFound : posOutflowNotFound,
+            setNotFound: posType === pos_type.inflow ? setPosInflowNotFound : setPosOutflowNotFound,
+            currentQuery: posType === pos_type.inflow ? queryPosInflow : queryPosOutflow,
+            setQuery: posType === pos_type.inflow ? setQueryPosInflow : setQueryPosOutflow,
+            dataList: posType === pos_type.inflow ? posInflowList : posOutflowList,
+            setDataList: posType === pos_type.inflow ? setPosInflowList : setPosOutflowList
+        };
     };
 
     const resetPayload = () => {
@@ -137,35 +201,52 @@ export default function Pos() {
     };
 
     const _handleChangeTab = async (currentTab: number) => {
-        const isPosInflow = currentTab - 1 === pos_type.inflow;
-        setType(currentTab - 1);
-        if (isPosInflow) {
-            if (posInflowList?.pos?.length <= 0 || !posInflowList) {
-                await fetchData(queryPosInflow, true)
-                return
-            }            
+        const posType = currentTab - 1;
+        const { dataList, currentQuery } = getCurrentTabData(posType);
+        setType(posType);
+
+        if (dataList?.pos?.length < 1 || !dataList) {
+            await fetchData(currentQuery, true);
         }
-        if (posOutflowList?.pos?.length <= 0 || !posOutflowList) {
-            await fetchData(queryPosOutflow, true);
-        }
+
     };
 
     const _handleSubmit = async (e): Promise<boolean> => {
         e.preventDefault();
-        const errors = validate(payload);      
-                
+        const errors = validate(payload);                      
         setErrorList(errors);
         if (errors.length > 0) { return false };
 
-        setLoading('create', true);
-        const resp: CreatePosResponse = await create(payload);                
+        const { posNotFound, setNotFound, currentQuery, setQuery } = getCurrentTabData(payload.type);
+
+        const q = { ...currentQuery };
+        if (posNotFound && q.page > 1) { 
+            q.page = q.page - 1;
+            setQuery({ ...q }); 
+            setNotFound(false);
+        }
+
+        setLoading('create', true);   
+        const p: any = {
+            name: payload.name,
+            type: payload.type,
+            color: payload.color
+        };
+        
+        if (action === 'edit') {
+            p.id = payload.id;
+        }
+
+        const resp: CreatePosResponse | UpdatePosResponse = await upsert(payload);                
         setLoading('create', false);
 
-        if (resp.status === status.Created) {
+        if (resp.status === status.Created || resp.status === status.OK) {
+            const messageAction = action === 'add' ? 'Create' : 'Edit';
             setIsVisible(false);
             resetPayload();
-            showToast('success', 'Create POS successfully');
-            fetchData(queryPosInflow, true);
+            
+            await fetchData(q, true);            
+            showToast('success', `${messageAction} POS successfully`);
             return true
         } 
         
@@ -173,45 +254,70 @@ export default function Pos() {
         return false;   
     };
 
+    const _handleCloseButton = (isVisible: boolean) => {
+        setIsVisible(isVisible);
+        resetPayload();
+    };
+
     const _handleLoadMoreData = async () => {
-        const isPosInflow = type === pos_type.inflow;
-        const setData = isPosInflow ? setQueryPosInflow : setQueryPosOutflow;
-        const currentQuery = isPosInflow ? { ...queryPosInflow } : { ...queryPosOutflow };
+        const { setQuery, currentQuery } = getCurrentTabData(type)
 
         const q: ListPosRequest = {
             ...currentQuery,
-            page: queryPosInflow.page + 1
+            page: currentQuery.page + 1
         };
 
-        setData({ ...q });
+        setQuery({ ...q });
         await fetchData(q, false);
+    };
+
+    const _handleModalVisible = (visible: boolean, action: string, data?: CreatePosRequest) => {
+        if (action === 'edit') {
+            setPayload({ ...data })
+        }
+        if (action === 'delete') {
+            setPayload({ ...data });
+            setModalDeleteVisible(visible);
+            return
+        }
+        setIsVisible(visible);
+        setAction(action);
     };
 
     const _onGoBack = () => {
         router.back();
     };
 
-    const RenderCashFlow = ({ data }) => (
+    const RenderCashFlow = ({ data, notFound }) => (
         <div className={s.cardWrapper}>
-            {notFound && queryPosInflow.page === 1 
+            {notFound && (data === null || data.length < 1) 
             ? <>Data not found</>
             :
-                data?.pos?.length > 0 && data.pos.map((item, key) => (
-                    <Card color={item.color} key={key}>
+                data?.pos?.length > 0 && data.pos.map((pos, key) => (
+                    <Card color={pos.color} key={key}>
                         <div className={s.posIdentity}>
-                            <div className={s.posName}>{item.name}</div>
-                            <div className={s.posTotal}>{formatMoney(item.total)}</div>
+                            <div className={s.posName}>{pos.name}</div>
+                            <div className={s.posTotal}>{formatMoney(pos.total)}</div>
                         </div>
                         <div className={s.actionButtonWrapper}>
                             {actionButton.map((ab, k) => (
-                                <div key={k} className={`${s.wrapper} ${k !== actionButton.length - 1 && 'mr-3'}`}>
+                                <button 
+                                    key={k} 
+                                    className={`${s.wrapper} ${k !== actionButton.length - 1 && 'mr-3'}`}
+                                    onClick={() => {                
+                                        if (k === 0) {                                            
+                                            return _handleModalVisible(!modalDeleteVisible, 'delete', pos);
+                                        }
+                                        _handleModalVisible(!isVisible, 'edit', pos);
+                                    }}
+                                >
                                     {ab}
-                                </div>
+                                </button>
                             ))}
                         </div>
                     </Card>
                 ))}
-                {!notFound && data?.pos?.length >= 10 && (
+                {!notFound && data?.pos?.length >= 1 && (
                     <div className={s.loadButtonWrapper}>
                         <button className={s.loadButton} onClick={_handleLoadMoreData}>
                             <RefreshIcon className="w-5 h-5"/>
@@ -238,19 +344,24 @@ export default function Pos() {
                     <div className={s.content}>
                         <Tabs 
                             tabs={[
-                                <RenderCashFlow data={posInflowList} key={0} />, 
-                                <RenderCashFlow data={posOutflowList} key={1}/>
+                                <RenderCashFlow notFound={posInflowNotFound} data={posInflowList} key={0} />, 
+                                <RenderCashFlow notFound={posOutflowNotFound} data={posOutflowList} key={1}/>
                             ]}
                             titles={['Inflow', 'Outflow']}
                             handleChangeTab={_handleChangeTab}
+                            style={{
+                                height: '100vh',
+                                minHeight: 400
+                            }}
 
                         />
-                        <FAB onClick={setIsVisible} visible={isVisible}/>
+                        <FAB onClick={(isVisible) => _handleModalVisible(isVisible, 'add')} visible={isVisible}/>
                         <Modal 
-                            title={"Add POS"} 
-                            onClick={setIsVisible} 
+                            title={`${action} POS`} 
                             isVisible={isVisible}
-                            _handleSubmit={_handleSubmit}
+                            handleCloseButton={_handleCloseButton} 
+                            handleSubmit={_handleSubmit}
+                            textSubmit={'Save changes'}
                         >
                             {form.map((item, key) => (
                                 <Form
@@ -267,7 +378,17 @@ export default function Pos() {
                                     colors={item.type === 'color' && item.colors}                                  
                                 />
                             ))}                                                                
-                        </Modal>
+                        </Modal>   
+
+                         <Modal 
+                            title="Delete POS" 
+                            isVisible={modalDeleteVisible}
+                            handleCloseButton={(visible) => setModalDeleteVisible(visible)} 
+                            handleSubmit={doDeletePos}
+                            textSubmit={'Delete'}
+                        >
+                           Are you sure?
+                        </Modal>                        
                     </div>                                        
                 </div>
 

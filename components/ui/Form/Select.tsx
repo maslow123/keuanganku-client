@@ -5,9 +5,8 @@ import { classNames } from '@util/helper';
 
 export default function Select({ handleChange, value, list }) {
   
-  const [dataList, setList] = useState<Record<string, any>>(list);
-  const [selected, setSelected] = useState<any>();
-  const [loading, setLoading] = useState<boolean>(false);
+  const [dataList] = useState<Record<string, any>>(list);
+  const [selected, setSelected] = useState<any>(list.find(data => data.id === value));
 
   return (
     <Listbox 
@@ -37,7 +36,7 @@ export default function Select({ handleChange, value, list }) {
               leaveTo="opacity-0"
             >
               <Listbox.Options className="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-56 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
-                {!loading && Array.isArray(dataList) && dataList?.length > 0 && dataList.map((c) => (
+                {Array.isArray(dataList) && dataList?.length > 0 && dataList.map((c) => (
                   <Listbox.Option
                     key={c.id}
                     className={({ active }) =>

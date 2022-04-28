@@ -1,7 +1,5 @@
 .contentWrapper {
     @apply relative flex flex-col min-w-0 break-words bg-white w-full mb-6 rounded overflow-auto ;
-    height: 100vh;
-    min-height: 400px;
 }
 .content {
     @apply h-1/2;

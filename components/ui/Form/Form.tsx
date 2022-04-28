@@ -74,7 +74,7 @@ const Form:FC<Props> = ({ label, required, name, type, hasError, disabled, handl
                 );           
             case 'color':
                 return (
-                    <div className="flex">
+                    <div className="flex overflow-auto">
                         {
                             colors.map(color => (
                                 <div key={color}>

@@ -1,6 +1,6 @@
 .fabWrapper {
     /* @apply flex justify-center items-center; */
-    @apply fixed right-24 bottom-24 xs:right-14 bottom-10 z-50 border-double;
+    @apply fixed right-24 bottom-24 xs:right-14 bottom-40 z-50 border-double;
 
 }
 

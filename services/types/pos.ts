@@ -21,6 +21,7 @@ export interface ListPosResponse extends ListPosRequest, GenericResponse {
 };
 
 export interface CreatePosRequest {
+    id?: number;
     name: string;
     type: 0 | 1;
     color: string;
@@ -29,3 +30,16 @@ export interface CreatePosRequest {
 export interface CreatePosResponse extends GenericResponse {
     id: number;
 };
+
+export interface UpdatePosRequest extends CreatePosRequest {
+    id?: number;
+};
+
+export interface UpdatePosResponse extends GenericResponse {
+    pos: Pos;
+};
+
+export interface DeletePosRequest {
+    id: number;
+}
+export interface DeletePosResponse extends GenericResponse {}
