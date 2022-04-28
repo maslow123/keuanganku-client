@@ -168,13 +168,14 @@ export default function Pos() {
     };
 
     const getCurrentTabData = (posType: number) => {
+        const isInflow = posType === pos_type.inflow;
         return {
-            posNotFound: posType === pos_type.inflow ? posInflowNotFound : posOutflowNotFound,
-            setNotFound: posType === pos_type.inflow ? setPosInflowNotFound : setPosOutflowNotFound,
-            currentQuery: posType === pos_type.inflow ? queryPosInflow : queryPosOutflow,
-            setQuery: posType === pos_type.inflow ? setQueryPosInflow : setQueryPosOutflow,
-            dataList: posType === pos_type.inflow ? posInflowList : posOutflowList,
-            setDataList: posType === pos_type.inflow ? setPosInflowList : setPosOutflowList
+            posNotFound: isInflow ? posInflowNotFound : posOutflowNotFound,
+            setNotFound: isInflow ? setPosInflowNotFound : setPosOutflowNotFound,
+            currentQuery: isInflow ? queryPosInflow : queryPosOutflow,
+            setQuery: isInflow ? setQueryPosInflow : setQueryPosOutflow,
+            dataList: isInflow ? posInflowList : posOutflowList,
+            setDataList: isInflow ? setPosInflowList : setPosOutflowList
         };
     };
 
