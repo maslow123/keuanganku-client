@@ -317,7 +317,7 @@ export default function Pos() {
                         </div>
                     </Card>
                 ))}
-                {!notFound && data?.pos?.length >= 1 && (
+                {!notFound && data?.pos?.length >= 10 && (
                     <div className={s.loadButtonWrapper}>
                         <button className={s.loadButton} onClick={_handleLoadMoreData}>
                             <RefreshIcon className="w-5 h-5"/>
