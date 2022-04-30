@@ -1,25 +1,20 @@
 import s from './../Dashboard.module.css';
 import { CloudDownloadIcon, DocumentTextIcon } from '@heroicons/react/outline';
-import { mock } from '@util/mock';
-import { transaction_type } from '@lib/constants';
 import { formatMoney } from '@util/helper';
 
-const HistoryTransaction = () => {        
+const HistoryTransaction = ({ data }) => {        
     return (
-        <>
-            <div className="font-bold pb-3">
-                <span>Transaction</span>
-            </div>
+        <>            
             <div className={s.transactionList}>
-                {mock.transaction.list.map((item, i) => (
+                {data?.length > 0 && data.map((item, i) => (
                     <div className={s.row} key={i}>                
                         <div className={s.transaction}>
                             <div className={s.transactionAmount}>
-                                {formatMoney(item.amount)}
+                                {formatMoney(item.total)}
                             </div>
                             <div className={s.sendBy}>
                                 Send by
-                                <span className={item.type ? 'text-sky-400' : 'text-emerald-500'}> {transaction_type[item.type]}</span>
+                                <span style={{ color: item.pos.color }}> {item.pos.name}</span>
                             </div>
                         </div>
                         <div className={s.menu}>

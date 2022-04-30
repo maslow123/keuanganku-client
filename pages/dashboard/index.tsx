@@ -26,7 +26,7 @@ export default function Dashboard() {
                         </div>
                         <div className={s.sectionName}>
                             <div className={s.name}>
-                                Omama
+                                Hi, Maslow
                             </div>
                             <div className={s.greeting}>
                                 Selamat pagi
@@ -47,7 +47,11 @@ export default function Dashboard() {
                         <Tabs 
                             tabs={[<FirstTab key={0}/>]} 
                             titles={['Personal Balance', 'Savings']}
+                            handleChangeTab={() => {}}
                         />
+                        <div className="font-bold pb-3">
+                            <span>Transaction</span>
+                        </div>
                         <HistoryTransaction/>
                     </>
                 </div>

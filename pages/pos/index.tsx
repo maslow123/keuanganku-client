@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import s from './Pos.module.css'
-import classNames from 'classnames';
-import { Layout } from '@components/common';
-import { ChevronLeftIcon, RefreshIcon, TrashIcon, EyeIcon, PencilIcon } from '@heroicons/react/outline';
-import { useRouter } from 'next/router';
+import { Header, Layout } from '@components/common';
+import { RefreshIcon, TrashIcon, EyeIcon, PencilIcon } from '@heroicons/react/outline';
 import { Card, FAB, Form, Modal, Tabs } from '@components/ui';
 import { formatMoney, hasError, showToast, validate } from '@util/helper';
 import { pos_type, status } from '@lib/constants';
 import { Colors } from '@lib/colors';
 import { create, list, update, deletePos } from 'services/pos';
-import { CreatePosRequest, CreatePosResponse, DeletePosRequest, ListPosRequest, ListPosResponse, UpdatePosRequest, UpdatePosResponse } from 'services/types/pos';
+import { CreatePosRequest, CreatePosResponse, ListPosRequest, ListPosResponse, UpdatePosRequest, UpdatePosResponse } from 'services/types/pos';
 
 export default function Pos() { 
     const actionButton: JSX.Element[] = [
@@ -47,7 +45,6 @@ export default function Pos() {
     const [isVisible, setIsVisible] = useState<boolean>(false);
     const [modalDeleteVisible, setModalDeleteVisible] = useState<boolean>(false);
     const [action, setAction] = useState<string>('add');
-    const router = useRouter();
     let colorList = [];
     for (let prop of Object.keys(Colors)) {
         colorList = [...colorList, Colors[prop]];
@@ -285,10 +282,6 @@ export default function Pos() {
         setAction(action);
     };
 
-    const _onGoBack = () => {
-        router.back();
-    };
-
     const RenderCashFlow = ({ data, notFound }) => (
         <div className={s.cardWrapper}>
             {notFound && (data === null || data.length < 1) 
@@ -331,69 +324,61 @@ export default function Pos() {
 
     return (
         <Layout>
-            <>
-                <div className={s.container}>
-                    <div className={s.header}>
-                        <div className={classNames(s.wrapper, 'cursor-pointer')} onClick={_onGoBack}>
-                            <ChevronLeftIcon className="w-5 h-5"/>
-                        </div>
-                        <div className={s.title}>
-                            Your POS
-                        </div>
-                    </div>
-                    
-                    <div className={s.content}>
-                        <Tabs 
-                            tabs={[
-                                <RenderCashFlow notFound={posInflowNotFound} data={posInflowList} key={0} />, 
-                                <RenderCashFlow notFound={posOutflowNotFound} data={posOutflowList} key={1}/>
-                            ]}
-                            titles={['Inflow', 'Outflow']}
-                            handleChangeTab={_handleChangeTab}
-                            style={{
-                                height: '100vh',
-                                minHeight: 400
-                            }}
+            
+            <div className={s.container}>
+                <Header title="Your POS"/>
+                
+                <div className={s.content}>
+                    <Tabs 
+                        tabs={[
+                            <RenderCashFlow notFound={posInflowNotFound} data={posInflowList} key={0} />, 
+                            <RenderCashFlow notFound={posOutflowNotFound} data={posOutflowList} key={1}/>
+                        ]}
+                        titles={['Inflow', 'Outflow']}
+                        handleChangeTab={_handleChangeTab}
+                        style={{
+                            height: '100vh',
+                            minHeight: 400
+                        }}
 
-                        />
-                        <FAB onClick={(isVisible) => _handleModalVisible(isVisible, 'add')} visible={isVisible}/>
+                    />
+                    <FAB onClick={(isVisible) => _handleModalVisible(isVisible, 'add')} visible={isVisible}/>
+                    <Modal 
+                        title={`${action} POS`} 
+                        isVisible={isVisible}
+                        handleCloseButton={_handleCloseButton} 
+                        handleSubmit={_handleSubmit}
+                        textSubmit={'Save changes'}
+                    >
+                        {form.map((item, key) => (
+                            <Form
+                                disabled={false}
+                                key={key}
+                                label={item.label}
+                                name={item.name}
+                                type={item.type}
+                                value={payload[item.name]}
+                                required
+                                handleChange={_handleChange}
+                                hasError={hasError(errorList, item.name)}  
+                                list={item.type === 'select' && item.data}    
+                                colors={item.type === 'color' && item.colors}                                  
+                            />
+                        ))}                                                                
+                    </Modal>   
+
                         <Modal 
-                            title={`${action} POS`} 
-                            isVisible={isVisible}
-                            handleCloseButton={_handleCloseButton} 
-                            handleSubmit={_handleSubmit}
-                            textSubmit={'Save changes'}
-                        >
-                            {form.map((item, key) => (
-                                <Form
-                                    disabled={false}
-                                    key={key}
-                                    label={item.label}
-                                    name={item.name}
-                                    type={item.type}
-                                    value={payload[item.name]}
-                                    required
-                                    handleChange={_handleChange}
-                                    hasError={hasError(errorList, item.name)}  
-                                    list={item.type === 'select' && item.data}    
-                                    colors={item.type === 'color' && item.colors}                                  
-                                />
-                            ))}                                                                
-                        </Modal>   
+                        title="Delete POS" 
+                        isVisible={modalDeleteVisible}
+                        handleCloseButton={(visible) => setModalDeleteVisible(visible)} 
+                        handleSubmit={doDeletePos}
+                        textSubmit={'Delete'}
+                    >
+                        Are you sure?
+                    </Modal>                        
+                </div>                                        
+            </div>
 
-                         <Modal 
-                            title="Delete POS" 
-                            isVisible={modalDeleteVisible}
-                            handleCloseButton={(visible) => setModalDeleteVisible(visible)} 
-                            handleSubmit={doDeletePos}
-                            textSubmit={'Delete'}
-                        >
-                           Are you sure?
-                        </Modal>                        
-                    </div>                                        
-                </div>
-
-            </>
         </Layout>
     );
 }

@@ -2,9 +2,7 @@
     @apply  flex bg-gray-100 w-11 h-11 rounded-full justify-center items-center;
 }
 
-.header {
-    
-}
+.header {}
 
 .title {
     @apply py-4 text-3xl font-bold tracking-wider;
@@ -16,7 +14,8 @@
 .cardWrapper {
     @apply overflow-auto;
 }
-/* Inside card */
+
+/* Contains card */
 .posIdentity {
     @apply flex flex-col;
 }
