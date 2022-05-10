@@ -1,6 +1,7 @@
 import s from './../Dashboard.module.css';
 import { CloudDownloadIcon, DocumentTextIcon } from '@heroicons/react/outline';
-import { formatMoney } from '@util/helper';
+import { formatDate, formatMoney } from '@util/helper';
+import { transaction_type } from '@lib/constants';
 
 const HistoryTransaction = ({ data }) => {        
     return (
@@ -12,9 +13,16 @@ const HistoryTransaction = ({ data }) => {
                             <div className={s.transactionAmount}>
                                 {formatMoney(item.total)}
                             </div>
+                            <div className={s.posName}>
+                                POS
+                                <span style={{ color: item.pos.color }}> {item.pos.name}</span>
+                            </div>
                             <div className={s.sendBy}>
                                 Send by
-                                <span style={{ color: item.pos.color }}> {item.pos.name}</span>
+                                <span className='text-sky-500'> {transaction_type[item.type]}</span>
+                            </div>
+                            <div className={s.timestamp}>
+                                {formatDate(item.created_at)}
                             </div>
                         </div>
                         <div className={s.menu}>

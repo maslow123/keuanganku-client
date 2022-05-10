@@ -1,9 +1,9 @@
 import { getToken } from "@util/helper";
 import { headers } from "services/headers";
-import { ListPosRequest, ListPosResponse } from "services/types/pos";
+import { ListTransactionRequest, ListTransactionResponse } from "services/types/transactions";
 
 
-const list = async (query: any): Promise<any> => {
+const list = async (query: ListTransactionRequest): Promise<ListTransactionResponse> => {
     try {
         getToken();
         const { page, limit } = query;
@@ -11,7 +11,7 @@ const list = async (query: any): Promise<any> => {
             method: 'GET',
             ...headers
         });
-        const json = await data.json();
+        const json: ListTransactionResponse = await data.json();
         return json;
     } catch(e) {
         console.log(e);

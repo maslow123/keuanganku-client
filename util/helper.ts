@@ -71,6 +71,11 @@ const showToast = (type: string, message: string) => {
     toast[type](message);
 };
 
+const formatDate = (number: number): string => {
+    const date = new Date(number * 1000);
+    return new Intl.DateTimeFormat('id-ID', { dateStyle: 'full', timeStyle: 'long' }).format(date);
+};
+
 export {
     hasError,
     checkEmailFormat,
@@ -78,5 +83,6 @@ export {
     classNames,
     formatMoney,
     getToken,
-    showToast
+    showToast,
+    formatDate
 };

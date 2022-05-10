@@ -73,6 +73,14 @@
     @apply font-bold;
 }
 
+.posName {
+    @apply uppercase;
+}
+
+.timestamp {
+    @apply text-xs font-bold;
+}
+
 .paymentMethod {
     @apply text-sky-400;
 }

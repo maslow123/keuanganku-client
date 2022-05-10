@@ -1,6 +1,6 @@
 import { GenericResponse } from "./generic";
 
-interface Pos {
+export interface Pos {
     id: number;
     name: string;
     type: number;

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Layout } from '@components/common';
 import s from './Dashboard.module.css'
 import Image from 'next/image';
@@ -6,8 +6,24 @@ import { images } from "@util/images";
 import { CogIcon, BellIcon } from "@heroicons/react/outline";
 import { Tabs } from '@components/ui';
 import { FirstTab, HistoryTransaction } from './components';
+import { list } from 'services/transactions';
+import { status } from '@lib/constants';
 
 export default function Dashboard() { 
+    const [transactionList, setTransactionList] = useState<any>(null); 
+    useEffect(() => {                
+        fetchData();
+        return;
+    }, []);
+
+    const fetchData = async () => {   
+        const query = { page: 1, limit: 10 };
+        const data = await list(query);
+
+        if (data.status === status.OK) {
+            setTransactionList(data.transaction);
+        }
+    };
     return (
         <Layout>
             <>
@@ -52,7 +68,7 @@ export default function Dashboard() {
                         <div className="font-bold pb-3">
                             <span>Transaction</span>
                         </div>
-                        <HistoryTransaction/>
+                        <HistoryTransaction data={transactionList}/>
                     </>
                 </div>
 

@@ -6,11 +6,14 @@ interface Props {
     href?: string;
     onClick: Function;
     visible: boolean;
+    disabled?: boolean;
 };
 
-const FAB: FC<Props> = ({ href, onClick, visible }) => {    
+const FAB: FC<Props> = ({ href, onClick, visible, disabled }) => {    
     return (
-        <div 
+        <button    
+            type="button"
+            disabled={disabled ?? false}       
             className={s.fabWrapper} 
             onClick={() => onClick(!visible)}
         >
@@ -26,7 +29,7 @@ const FAB: FC<Props> = ({ href, onClick, visible }) => {
                     </svg>
                 </button>
             </Link>
-        </div>
+        </button>
     )
 };
 
