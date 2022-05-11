@@ -258,7 +258,7 @@ export default function Pos() {
     };
 
     const _handleLoadMoreData = async () => {
-        const { setQuery, currentQuery } = getCurrentTabData(type)
+        const { setQuery, currentQuery } = getCurrentTabData(type);
 
         const q: ListPosRequest = {
             ...currentQuery,

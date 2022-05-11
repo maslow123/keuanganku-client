@@ -16,6 +16,7 @@ interface Transaction {
 export interface ListTransactionRequest {
     page: number;
     limit: number;
+    action: number;
 };
 
 export interface ListTransactionResponse extends ListTransactionRequest, GenericResponse {

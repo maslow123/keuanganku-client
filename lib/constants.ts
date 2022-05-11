@@ -15,4 +15,6 @@ const pos_type = {
     outflow: 1
 };
 
-export { status, transaction_type, pos_type };
+const transaction_action = { ...pos_type };
+
+export { status, pos_type, transaction_type, transaction_action };

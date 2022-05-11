@@ -6,8 +6,8 @@ import { ListTransactionRequest, ListTransactionResponse } from "services/types/
 const list = async (query: ListTransactionRequest): Promise<ListTransactionResponse> => {
     try {
         getToken();
-        const { page, limit } = query;
-        const data = await fetch(`http://localhost:3000/transactions/list?page=${page}&limit=${limit}`, {
+        const { page, limit, action } = query;
+        const data = await fetch(`http://localhost:3000/transactions/list?page=${page}&limit=${limit}&action=${action}`, {
             method: 'GET',
             ...headers
         });

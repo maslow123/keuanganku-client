@@ -96,6 +96,30 @@ const Form:FC<Props> = ({ label, required, name, type, hasError, disabled, handl
                         }
                     </div>
                 );
+            case 'radio':
+                return (
+                    <>
+                    
+                        <div>
+                            {list.map((item, i) => (
+                                <div key={i} className="flex items-center mr-4 mb-4">
+                                    <input 
+                                        id={`${item.name}-${i}`} 
+                                        type="radio" 
+                                        name={name} 
+                                        className="hidden" 
+                                        value={item.id}
+                                        onClick={(e: any) => handleChange(e)}
+                                    />
+                                    <label htmlFor={`${item.name}-${i}`} className={`flex items-center cursor-pointer`}>
+                                        <span className="w-6 h-6 inline-block mr-2 rounded-full border border-gray-400 flex-no-shrink"></span>
+                                        {item.name}
+                                    </label>
+                                </div>
+                            ))}
+                        </div>
+                    </>
+                );
             default:
                 return null
         }
@@ -113,7 +137,7 @@ const Form:FC<Props> = ({ label, required, name, type, hasError, disabled, handl
             && (
                 <div className="text-left" style={{ color: 'red' }}>
                     <span className="capitalize">{ !errorMessage && label} </span> 
-                    {errorMessage || 'tidak boleh kosong'} 
+                    {errorMessage || `is required`} 
                 </div>
             )}            
         </div>            

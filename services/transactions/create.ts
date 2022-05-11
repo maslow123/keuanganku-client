@@ -1,8 +1,8 @@
 import { getToken } from "@util/helper";
 import { headers } from "services/headers";
-import { CreatePosRequest, CreatePosResponse } from "services/types/pos";
+import { CreateTransactionRequest, CreateTransactionResponse } from "services/types/transactions";
 
-const create = async (payload: any): Promise<any> => {
+const create = async (payload: CreateTransactionRequest): Promise<CreateTransactionResponse> => {
     try {
         getToken();
         const data = await fetch('http://localhost:3000/transactions/create', {

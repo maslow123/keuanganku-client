@@ -12,7 +12,7 @@ interface Props {
 const Tabs:FC<Props> = ({ tabs, titles, handleChangeTab, style }) => {
     const [openTab, setOpenTab] = useState(1);
     return (
-        <div className="flex flex-wrap mt-4">
+        <div className="flex flex-wrap mt-4 pb-10">
             <div>
                 <ul
                     className="flex mb-0 list-none flex-wrap pt-3 pb-4 flex-row"

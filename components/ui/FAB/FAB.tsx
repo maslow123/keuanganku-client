@@ -11,14 +11,14 @@ interface Props {
 
 const FAB: FC<Props> = ({ href, onClick, visible, disabled }) => {    
     return (
-        <button    
-            type="button"
-            disabled={disabled ?? false}       
-            className={s.fabWrapper} 
-            onClick={() => onClick(!visible)}
-        >
+        <div className={s.fabWrapper}>
             <Link href={href || '#'}>
-                <button className={s.fabButton}>
+                <button 
+                    onClick={() => onClick(!visible)}
+                    className={s.fabButton}                    
+                    type="button"
+                    disabled={disabled ?? false}    
+                >
                     <svg viewBox="0 0 20 20" enableBackground="new 0 0 20 20" className="w-6 h-6 inline-block">
                         <path 
                             fill="#FFFFFF" 
@@ -29,7 +29,7 @@ const FAB: FC<Props> = ({ href, onClick, visible, disabled }) => {
                     </svg>
                 </button>
             </Link>
-        </button>
+        </div>
     )
 };
 
