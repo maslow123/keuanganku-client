@@ -42,7 +42,7 @@
 
 /* Transaction */
 .transactions {
-    @apply flex flex-row justify-between;
+    @apply flex flex-row justify-around;
 }
 
 .section {

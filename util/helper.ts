@@ -58,8 +58,12 @@ const classNames = (...classes: any) => {
     return classes.filter(Boolean).join(' ')
 };
 
-const formatMoney = (number: number): string => {    
-    return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR" }).format(number);
+const formatMoney = (number: number, withCurrency: boolean = true): string => {    
+    let money = new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR" }).format(number);
+    if (!withCurrency) {
+        money = money.replaceAll('Rp', '').trim();
+    }
+    return money;
 };
 
 const getToken = () => {

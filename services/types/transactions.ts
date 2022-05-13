@@ -17,6 +17,8 @@ export interface ListTransactionRequest {
     page: number;
     limit: number;
     action: number;
+    startDate: number;
+    endDate: number;
 };
 
 export interface ListTransactionResponse extends ListTransactionRequest, GenericResponse {

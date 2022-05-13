@@ -111,8 +111,8 @@ const Form:FC<Props> = ({ label, required, name, type, hasError, disabled, handl
                                         value={item.id}
                                         onClick={(e: any) => handleChange(e)}
                                     />
-                                    <label htmlFor={`${item.name}-${i}`} className={`flex items-center cursor-pointer`}>
-                                        <span className="w-6 h-6 inline-block mr-2 rounded-full border border-gray-400 flex-no-shrink"></span>
+                                    <label htmlFor={`${item.name}-${i}`} className={`flex items-center cursor-pointer text-sm`}>
+                                        <span className="w-4 h-4 inline-block mr-2 rounded-full border border-gray-400 flex-no-shrink"></span>
                                         {item.name}
                                     </label>
                                 </div>

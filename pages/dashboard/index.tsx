@@ -8,21 +8,38 @@ import { Tabs } from '@components/ui';
 import { FirstTab, HistoryTransaction } from './components';
 import { list } from 'services/transactions';
 import { status } from '@lib/constants';
+import { ListTransactionRequest, ListTransactionResponse } from 'services/types/transactions';
+import { user } from 'services/balance';
 
 export default function Dashboard() { 
-    const [transactionList, setTransactionList] = useState<any>(null); 
+    const [transactionList, setTransactionList] = useState<ListTransactionResponse>(null); 
+    const [balanceList, setBalanceList] = useState<any>(null); 
+    const [transactionNotFound, setTransactionNotFound] = useState<boolean>(false);
+    const [balanceNotFound, setBalanceNotFound] = useState<boolean>(false);
     useEffect(() => {                
-        fetchData();
+        fetchTransactionData();
+        fetchUserBalance();
+
         return;
     }, []);
 
-    const fetchData = async () => {   
-        const query = { page: 1, limit: 10 };
+    const fetchTransactionData = async () => {   
+        const query: ListTransactionRequest = { page: 1, limit: 5, action: 0, startDate: 0, endDate: 0 };
         const data = await list(query);
 
         if (data.status === status.OK) {
-            setTransactionList(data.transaction);
+            setTransactionList(data);
+            return
         }
+        setTransactionNotFound(true);
+    };
+    const fetchUserBalance = async () => {   
+        const data = await user();
+        if (data.status === status.OK) {
+            setBalanceList(data.balances);
+            return
+        }
+        setBalanceNotFound(true);
     };
     return (
         <Layout>
@@ -61,14 +78,18 @@ export default function Dashboard() {
                 <div className={s.tab}>
                     <>                    
                         <Tabs 
-                            tabs={[<FirstTab key={0}/>]} 
-                            titles={['Personal Balance', 'Savings']}
+                            tabs={[<FirstTab key={0} balances={balanceList || []}/>]} 
+                            titles={['Personal Balance']}
                             handleChangeTab={() => {}}
                         />
                         <div className="font-bold pb-3">
-                            <span>Transaction</span>
+                            <span>Last today transactions: </span>
                         </div>
-                        <HistoryTransaction data={transactionList}/>
+                        <HistoryTransaction 
+                            data={transactionList?.transaction} 
+                            isNotFound={transactionNotFound} 
+                            handleLoadMoreData={() => {}}
+                        />
                     </>
                 </div>
 

@@ -6,10 +6,11 @@ interface Props {
     title: string;
     children: ReactNode;
     handleSubmit: FormEventHandler<any> | undefined;
-    textSubmit: string
+    textSubmit: string;
+    autoWidth?: boolean;
 }
 
-const Modal: FC<Props> = ({ isVisible, handleCloseButton, title, children, handleSubmit, textSubmit }) => {    
+const Modal: FC<Props> = ({ isVisible, handleCloseButton, title, children, handleSubmit, textSubmit, autoWidth }) => {    
     return (
         <>        
             {isVisible ? (
@@ -17,7 +18,7 @@ const Modal: FC<Props> = ({ isVisible, handleCloseButton, title, children, handl
                     <div
                         className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none"
                     >
-                        <div className="relative w-1/2 my-6 mx-auto max-w-3xl xs:w-full">
+                        <div className={`relative ${!autoWidth && 'w-1/2'} my-6 mx-auto max-w-3xl xs:w-full`}>
                         {/*content*/}
                         <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
                             {/*header*/}

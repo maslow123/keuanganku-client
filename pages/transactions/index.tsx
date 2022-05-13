@@ -1,21 +1,25 @@
 import { Header, Layout } from "@components/common";
-import { FAB, Form, Modal, Tabs } from "@components/ui";
+import { Datepicker, FAB, Form, Modal, Tabs } from "@components/ui";
 import { status, transaction_action } from "@lib/constants";
 import { hasError, showToast, validate } from "@util/helper";
 import { HistoryTransaction } from "pages/dashboard/components";
 import { useEffect, useState } from "react";
 import { create, list } from "services/transactions";
 import { list as listPos } from "services/pos";
-import s from './Transactions.module.css';
 import { CreateTransactionRequest, ListTransactionRequest, ListTransactionResponse } from "services/types/transactions";
+import { useRouter } from "next/router";
+import s from './Transactions.module.css';
 
 export default function Transaction() {   
+    const router = useRouter();
     const [transactionInflowList, setTransactionInflowList] = useState<ListTransactionResponse>(null);
     const [transactionOutflowList, setTransactionOutflowList] = useState<ListTransactionResponse>(null);
     const [queryTransactionInflow, setQueryTransactionInflow] = useState<ListTransactionRequest>({ 
         page: 1, 
         limit: 10, 
-        action: 0 
+        action: 0,
+        startDate: 0,
+        endDate: 0,
     });
     const [queryTransactionOutflow, setQueryTransactionOutflow] = useState<ListTransactionRequest>({ 
         ...queryTransactionInflow, 
@@ -38,7 +42,7 @@ export default function Transaction() {
         fetchPos: true
     });
     const [errorList, setErrorList] = useState<string[]>(null);
-    const [isVisible, setIsVisible] = useState<boolean>(false);
+    const [isVisible, setIsVisible] = useState<boolean>(Boolean(router?.query?.showModal) || false);
     const [form, setForm] = useState<Record<any, any>[]>([
         {
             label: 'Pos Name',
@@ -95,6 +99,7 @@ export default function Transaction() {
         },
     ]);
     const [inserted, setInserted] = useState<number>(0);
+    const [dateModalVisible, setDateModalVisible] = useState<boolean>(false);
 
     useEffect(() => {                
         const fetchDataTransactionAndPos = async () => {
@@ -113,7 +118,7 @@ export default function Transaction() {
         const data = await list(q);
         setIsLoading({ ...currentStateLoading, fetchTransaction: false });
 
-        if (data.toString() === 'transaction-not-found') {
+        if (data.status === status.NotFound) {
             setNotFound(true);
             if (q.page === 1) {
                 setDataList(null);
@@ -153,9 +158,12 @@ export default function Transaction() {
 
         const currentLoading = { ...isLoading, fetchPos: false };
         if (data.status === status.OK) {
-
             form[0].data = data.pos.map(item => { return { id: item.id, 'name': item.name } });
             setForm([ ...form ]);
+        }
+        if (data.status === status.NotFound) {
+            router.back();
+            return
         }
         return currentLoading
     };
@@ -214,7 +222,7 @@ export default function Transaction() {
 
         const { transactionNotFound, setNotFound, currentQuery, setQuery } = getCurrentTabData(payload.action_type);
 
-        const q = { ...currentQuery };
+        const q = { ...currentQuery, startDate: 0, endDate: 0 };
         if (transactionNotFound && q.page > 1) {             
             setNotFound(false);
         }
@@ -239,8 +247,14 @@ export default function Transaction() {
         let value = evt?.field ? evt.id : evt.target.value;
         const name = evt?.field ? evt.field : evt.target.name;
 
-        if (name === 'total' || name === 'action_type' || name === 'type') {
-            value = Number(value);
+        switch(name) {
+            case 'total':
+            case 'action_type':
+            case 'type':
+                value = Number(value);
+                break;
+            default:
+                break;
         }
 
         setPayload({ ...payload, [name]: value });
@@ -269,11 +283,26 @@ export default function Transaction() {
         }
     };
 
+    const _handleSubmitDate = (dateSelection: Record<string, any>, currentDateModalVisible: boolean, isSubmit: boolean = false) => {
+        setDateModalVisible(currentDateModalVisible);
+        const { currentQuery } = getCurrentTabData(action);
+        const q = { 
+            ...currentQuery,
+            startDate: dateSelection.startDate.getTime(),
+            endDate: dateSelection.endDate.getTime()
+        };
+
+        if (isSubmit) {
+            fetchDataTransaction(isLoading, q, false);
+        }
+    };
+
     return (
         <Layout>
             <div className={s.container}>
                 <Header title="Transactions"/>
                 <div className={s.content}>
+                    <Datepicker visible={dateModalVisible} _handleSubmit={_handleSubmitDate}/>                    
                     <Tabs 
                         tabs={[
                             <HistoryTransaction 
