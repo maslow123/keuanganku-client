@@ -6,14 +6,16 @@ import { ListTransactionRequest, ListTransactionResponse } from "services/types/
 const list = async (query: ListTransactionRequest): Promise<ListTransactionResponse> => {
     try {
         getToken();
-        let { page, limit, action, startDate, endDate } = query;
-        if (startDate) { 
-            startDate /= 1000;
+        let { startDate: start_date, endDate: end_date } = query;
+        if (start_date) { 
+            start_date /= 1000;
         }
-        if (endDate) { 
-            endDate /= 1000;
+        if (end_date) { 
+            end_date /= 1000;
         }
-        const data = await fetch(`http://localhost:3000/transactions/list?page=${page}&limit=${limit}&action=${action}&start_date=${startDate}&end_date=${endDate}`, {
+
+        const q = new URLSearchParams(query as any).toString().replace('startDate', 'start_date').replace('endDate', 'end_date');
+        const data = await fetch(`http://localhost:3000/transactions/list?${q}`, {
             method: 'GET',
             ...headers
         });

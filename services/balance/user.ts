@@ -1,6 +1,5 @@
 import { getToken } from "@util/helper";
 import { headers } from "services/headers";
-import { ListPosRequest, ListPosResponse } from "services/types/pos";
 
 
 const user = async (): Promise<any> => {

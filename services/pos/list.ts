@@ -5,9 +5,9 @@ import { ListPosRequest, ListPosResponse } from "services/types/pos";
 
 const list = async (query: ListPosRequest): Promise<ListPosResponse> => {
     try {
-        getToken();
-        const { page, limit, type } = query;
-        const data = await fetch(`http://localhost:3000/pos/list?page=${page}&limit=${limit}&type=${type}`, {
+        getToken();        
+        const q = new URLSearchParams(query as any).toString();
+        const data = await fetch(`http://localhost:3000/pos/list?${q}`, {
             method: 'GET',
             ...headers
         });
