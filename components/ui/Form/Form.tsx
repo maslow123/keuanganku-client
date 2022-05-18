@@ -1,6 +1,7 @@
-import { ChangeEventHandler, FC, MouseEventHandler } from "react";
+import { ChangeEventHandler, FC } from "react";
 import s from './Form.module.css';
 import Select from "./Select";
+import { Calendar } from 'react-date-range';
 
 interface Props {
     label: string;
@@ -21,8 +22,8 @@ const Form:FC<Props> = ({ label, required, name, type, hasError, disabled, handl
 
     const generateForm = () => {
         switch(type) {
-            case 'text': 
-            case 'date':
+            case 'text':
+            case 'number':
             case 'password':
                 return (
                     <input 
@@ -30,9 +31,18 @@ const Form:FC<Props> = ({ label, required, name, type, hasError, disabled, handl
                         className={`${s.formInput}`} 
                         style={{ borderColor: hasError && 'red' }}
                         name={name} 
-                        type={type}
+                        type={type === 'number' ? 'text' : type}
                         placeholder={label}
-                        onChange={disabled ? () => {}: handleChange}
+                        onChange={e => {
+                            if (disabled) {
+                                return false;
+                            }
+                            if (type === 'number') {
+                               e.target.value = e.target.value.replace(/[^\d]+/g,'');                               
+                            }
+
+                            handleChange(e);
+                        }}
                         value={value}
                     />
                 );
@@ -120,6 +130,24 @@ const Form:FC<Props> = ({ label, required, name, type, hasError, disabled, handl
                         </div>
                     </>
                 );
+            case 'date': {
+                return (
+                    <>
+                        <Calendar                                                        
+                            date={new Date(parseInt(value as string))}                        
+                            onChange={date => {
+                                const e: any = {};
+                                e.target = {};
+                                e.target.name = 'date';
+                                e.target.value = date.getTime();
+
+                                handleChange(e);
+                            }}
+                            maxDate={new Date()}
+                        />
+                    </>
+                )
+            }
             default:
                 return null
         }

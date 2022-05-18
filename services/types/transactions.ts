@@ -31,6 +31,7 @@ export interface CreateTransactionRequest {
     details: string;
     action_type: 0 | 1;
     type: 0 | 1;
+    date: number;
 };
 
 export interface CreateTransactionResponse extends GenericResponse {

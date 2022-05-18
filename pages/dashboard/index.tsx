@@ -89,6 +89,7 @@ export default function Dashboard() {
                             data={transactionList?.transaction} 
                             isNotFound={transactionNotFound} 
                             handleLoadMoreData={() => {}}
+                            onDelete={(transactionId) => console.log(transactionId)}
                         />
                     </>
                 </div>

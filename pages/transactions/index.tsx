@@ -4,7 +4,7 @@ import { status, transaction_action } from "@lib/constants";
 import { hasError, showToast, validate } from "@util/helper";
 import { HistoryTransaction } from "pages/dashboard/components";
 import { useEffect, useState } from "react";
-import { create, list } from "services/transactions";
+import { create, deleteTransaction, list } from "services/transactions";
 import { list as listPos } from "services/pos";
 import { CreateTransactionRequest, ListTransactionRequest, ListTransactionResponse } from "services/types/transactions";
 import { useRouter } from "next/router";
@@ -25,12 +25,15 @@ export default function Transaction() {
         ...queryTransactionInflow, 
         action: 1 
     });
+    
+    const [inserted, setInserted] = useState<number>(0);
     const [payload, setPayload] = useState<CreateTransactionRequest>({
-        pos_id: 0,
+        pos_id: null,
         total: 0,
         details: '',
         action_type: null,
-        type: null
+        type: null,
+        date: new Date().getTime()
     });
     const [transactionInflowNotFound, setTransactionInflowNotFound] = useState<boolean>(false);
     const [transactionOutflowNotFound, setTransactionOutflowNotFound] = useState<boolean>(false);
@@ -54,7 +57,7 @@ export default function Transaction() {
         {
             label: 'Total',
             name: 'total',
-            type: 'text',
+            type: 'number',
             data: [],
             colors: []
         },  
@@ -64,7 +67,7 @@ export default function Transaction() {
             type: 'text',
             data: [],
             colors: []
-        },  
+        },          
         {
             label: 'Action',
             name: 'action_type',
@@ -97,8 +100,14 @@ export default function Transaction() {
             ],
             colors: []
         },
+        {
+            label: 'Date',
+            name: 'date',
+            type: 'date',            
+            data: [],
+            colors: []
+        },
     ]);
-    const [inserted, setInserted] = useState<number>(0);
     const [dateModalVisible, setDateModalVisible] = useState<boolean>(false);
 
     useEffect(() => {                
@@ -110,7 +119,12 @@ export default function Transaction() {
         fetchDataTransactionAndPos();
     }, []);
 
-    const fetchDataTransaction = async (currentStateLoading: any, q: ListTransactionRequest, afterInsert: boolean = false) => {                
+    const fetchDataTransaction = async (
+        currentStateLoading: any, 
+        q: ListTransactionRequest, 
+        afterInsert: boolean = false,
+        reset: boolean = false
+    ) => {                
         const { setNotFound, dataList, setDataList } = getCurrentTabData(q.action);
         if (afterInsert) {
             q.page = 1;
@@ -123,6 +137,11 @@ export default function Transaction() {
             if (q.page === 1) {
                 setDataList(null);
             }
+            return
+        }
+
+        if (reset) {
+            setDataList({ ...data });
             return
         }
 
@@ -153,7 +172,7 @@ export default function Transaction() {
     };
     
     const fetchPos = async () => {
-        const query = { page: 1, limit: 10, type: 0 };
+        const query = { page: 1, limit: 100, type: 2 };
         const data = await listPos(query);
 
         const currentLoading = { ...isLoading, fetchPos: false };
@@ -174,7 +193,8 @@ export default function Transaction() {
             total: 0,
             details: '',
             action_type: 1,
-            type: 0
+            type: 0,
+            date: new Date().getTime()
         });
     };
 
@@ -214,13 +234,25 @@ export default function Transaction() {
         };
     };
 
+    const onDeleteTransaction = async (transactionId: number) => {
+        const data = await deleteTransaction(transactionId);        
+        if (data.status !== status.OK) {
+            showToast('error', data.error);
+            return
+        }
+        showToast('success', 'Data successfully deleted');
+        const { dataList, setDataList } = getCurrentTabData(action);
+        dataList.transaction = dataList.transaction.filter(item => item.id !== transactionId);
+        setDataList({ ...dataList });        
+    };
+
     const _handleSubmit = async (e): Promise<boolean> => {
         e.preventDefault();
         const errors = validate(payload);                      
         setErrorList(errors);
         if (errors.length > 0) { return false };
 
-        const { transactionNotFound, setNotFound, currentQuery, setQuery } = getCurrentTabData(payload.action_type);
+        const { transactionNotFound, setNotFound, currentQuery } = getCurrentTabData(payload.action_type);
 
         const q = { ...currentQuery, startDate: 0, endDate: 0 };
         if (transactionNotFound && q.page > 1) {             
@@ -244,7 +276,7 @@ export default function Transaction() {
     };
 
     const _handleChange = (evt): void => {
-        let value = evt?.field ? evt.id : evt.target.value;
+        let value = evt?.field ? evt.id : evt?.target?.value;
         const name = evt?.field ? evt.field : evt.target.name;
 
         switch(name) {
@@ -287,13 +319,15 @@ export default function Transaction() {
         setDateModalVisible(currentDateModalVisible);
         const { currentQuery } = getCurrentTabData(action);
         const q = { 
-            ...currentQuery,
-            startDate: dateSelection.startDate.getTime(),
-            endDate: dateSelection.endDate.getTime()
+            page: 1, 
+            limit: 10, 
+            action: currentQuery.action,
+            startDate: Math.floor(dateSelection.startDate.getTime() / 1000),
+            endDate: Math.floor(dateSelection.endDate.getTime() / 1000),            
         };
 
         if (isSubmit) {
-            fetchDataTransaction(isLoading, q, false);
+            fetchDataTransaction(isLoading, q, false, true);
         }
     };
 
@@ -310,12 +344,14 @@ export default function Transaction() {
                                 data={transactionInflowList?.transaction} 
                                 isNotFound={transactionInflowNotFound}
                                 handleLoadMoreData={_handleLoadMoreData}
+                                onDelete={onDeleteTransaction}
                             />, 
                             <HistoryTransaction 
                                 key={1} 
                                 data={transactionOutflowList?.transaction} 
                                 isNotFound={transactionOutflowNotFound}
                                 handleLoadMoreData={_handleLoadMoreData}
+                                onDelete={onDeleteTransaction}
                             />
                         ]}
                         titles={['Inflow', 'Outflow']}
@@ -337,6 +373,7 @@ export default function Transaction() {
                     handleCloseButton={_handleCloseButton} 
                     handleSubmit={_handleSubmit}
                     textSubmit={'Save changes'}
+                    scrollview={true}
                 >
                     {form.map((item, key) => (
                         <Form

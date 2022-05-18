@@ -1,9 +1,9 @@
 import s from './../Dashboard.module.css';
-import { CloudDownloadIcon, DocumentTextIcon, RefreshIcon } from '@heroicons/react/outline';
+import { CloudDownloadIcon, DocumentTextIcon, RefreshIcon, TrashIcon } from '@heroicons/react/outline';
 import { formatDate, formatMoney } from '@util/helper';
 import { transaction_type } from '@lib/constants';
 
-const HistoryTransaction = ({ data, isNotFound, handleLoadMoreData }) => {   
+const HistoryTransaction = ({ data, isNotFound, handleLoadMoreData, onDelete }) => {   
     const showLoadMoreButton = (i: number, totalData: number) => {
         return (!isNotFound && data?.length >= 10 && (i === totalData));
     };
@@ -33,6 +33,9 @@ const HistoryTransaction = ({ data, isNotFound, handleLoadMoreData }) => {
                                     </div>
                                 </div>
                                 <div className={s.menu}>
+                                    <div className={`${s.download} cursor-pointer`} onClick={() => onDelete(item.id)}>
+                                        <TrashIcon className="w-5 h-5"/>
+                                    </div>
                                     <div className={s.download}>
                                         <CloudDownloadIcon className="w-5 h-5"/>
                                     </div>

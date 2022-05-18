@@ -8,9 +8,10 @@ interface Props {
     handleSubmit: FormEventHandler<any> | undefined;
     textSubmit: string;
     autoWidth?: boolean;
+    scrollview?: boolean;
 }
 
-const Modal: FC<Props> = ({ isVisible, handleCloseButton, title, children, handleSubmit, textSubmit, autoWidth }) => {    
+const Modal: FC<Props> = ({ isVisible, handleCloseButton, title, children, handleSubmit, textSubmit, autoWidth, scrollview }) => {    
     return (
         <>        
             {isVisible ? (
@@ -36,7 +37,7 @@ const Modal: FC<Props> = ({ isVisible, handleCloseButton, title, children, handl
                                 </button>
                             </div>
                             {/*body*/}
-                            <div className="relative p-6 flex-auto">
+                            <div className={`relative p-6 flex-auto ${scrollview && 'h-96 overflow-auto'}`}>
                                 {children}
                             </div>
                             {/*footer*/}
