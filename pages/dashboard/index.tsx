@@ -82,15 +82,17 @@ export default function Dashboard() {
                             titles={['Personal Balance']}
                             handleChangeTab={() => {}}
                         />
-                        <div className="font-bold pb-3">
-                            <span>Last today transactions: </span>
+                        <div className={s.transactionWrapper}>
+                            <div className="font-bold pb-3">
+                                <span>Last today transactions: </span>
+                            </div>
+                            <HistoryTransaction 
+                                data={transactionList?.transaction} 
+                                isNotFound={transactionNotFound} 
+                                handleLoadMoreData={() => {}}
+                                onDelete={(transactionId) => console.log(transactionId)}
+                            />
                         </div>
-                        <HistoryTransaction 
-                            data={transactionList?.transaction} 
-                            isNotFound={transactionNotFound} 
-                            handleLoadMoreData={() => {}}
-                            onDelete={(transactionId) => console.log(transactionId)}
-                        />
                     </>
                 </div>
 

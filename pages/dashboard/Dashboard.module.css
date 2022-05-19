@@ -97,8 +97,13 @@
 }
 
 .loadButtonWrapper {
-    @apply flex justify-center;
+    @apply flex justify-center mt-1;
 }
 .loadButton {
     @apply p-0 w-16 h-16 bg-blue-theme rounded-full active:shadow-lg shadow flex justify-center items-center text-white;
+}
+
+.transactionWrapper {
+    @apply h-96 overflow-auto;
+
 }

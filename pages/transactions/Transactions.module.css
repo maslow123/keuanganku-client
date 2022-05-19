@@ -1,3 +1,9 @@
+.header {
+    @apply flex flex-row justify-between;
+}
+.total {
+    @apply flex items-center;
+}
 .date {
-    @apply text-right
+    @apply text-right;
 }

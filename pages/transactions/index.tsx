@@ -1,7 +1,7 @@
 import { Header, Layout } from "@components/common";
 import { Datepicker, FAB, Form, Modal, Tabs } from "@components/ui";
 import { status, transaction_action } from "@lib/constants";
-import { hasError, showToast, validate } from "@util/helper";
+import { formatDate, formatMoney, hasError, showToast, validate } from "@util/helper";
 import { HistoryTransaction } from "pages/dashboard/components";
 import { useEffect, useState } from "react";
 import { create, deleteTransaction, list } from "services/transactions";
@@ -125,10 +125,9 @@ export default function Transaction() {
         afterInsert: boolean = false,
         reset: boolean = false
     ) => {                
-        const { setNotFound, dataList, setDataList } = getCurrentTabData(q.action);
-        if (afterInsert) {
-            q.page = 1;
-        }
+        const { setNotFound, dataList, setDataList, currentQuery, setQuery } = getCurrentTabData(q.action);        
+        q.page = afterInsert ? 1 : q.page;
+
         const data = await list(q);
         setIsLoading({ ...currentStateLoading, fetchTransaction: false });
 
@@ -136,23 +135,40 @@ export default function Transaction() {
             setNotFound(true);
             if (q.page === 1) {
                 setDataList(null);
+                setQuery({
+                    ...q,
+                    page: 1, 
+                    limit: 10, 
+                });                
             }
             return
         }
 
         if (reset) {
+            
+            setQuery({
+                ...q,
+                page: 1, 
+                limit: 10, 
+            });
             setDataList({ ...data });
+            setNotFound(false);
             return
         }
 
         if (afterInsert) {
-            if (dataList?.transaction?.length > 10) {
+            if (dataList?.transaction?.length > 10 && !currentQuery.startDate) {
                 const currentTransaction = setTransaction(q.page, dataList, data, afterInsert);
                 setDataList({
                     ...data,
                     transaction: [...currentTransaction]
                 });
                 return
+            }
+
+            if (currentQuery.startDate > 0) {
+                q.page = 1;
+                setQuery({ ...q });
             }
             setDataList({ ...data });
         }
@@ -265,7 +281,7 @@ export default function Transaction() {
             showToast('success', 'Create transaction successfully');
             setIsVisible(false);
             resetPayload();
-            fetchDataTransaction(isLoading, q, true);
+            fetchDataTransaction(isLoading, q, true, false);
         }
 
         return true;
@@ -297,7 +313,7 @@ export default function Transaction() {
 
         const q: ListTransactionRequest = {
             ...currentQuery,
-            page: currentQuery.page + 1
+            page: currentQuery.page + 1,
         };
 
         setQuery({ ...q });
@@ -331,12 +347,40 @@ export default function Transaction() {
         }
     };
 
+    const _renderTextTotalTransaction = (act) => {
+        const { currentQuery, dataList } = getCurrentTabData(act);
+        const { startDate, endDate } = currentQuery;
+
+        let text = 'Today';
+
+        if (startDate > 0 && endDate > 0) {
+            text = `${formatDate(startDate, false)} - ${formatDate(endDate, false)}`;
+            if (startDate === endDate) {
+                text = `${formatDate(startDate, false)}`;    
+            }
+        }    
+        const title = !action ? 'income' : 'expenditure';    
+        return (
+            <label className="">
+                Total {title} on {text}
+                <br/><span className="font-bold"> {formatMoney(dataList?.total_transaction || 0)}</span>
+            </label>
+        );
+    }
+
     return (
         <Layout>
             <div className={s.container}>
                 <Header title="Transactions"/>
                 <div className={s.content}>
-                    <Datepicker visible={dateModalVisible} _handleSubmit={_handleSubmitDate}/>                    
+                    <div className={s.header}>
+                        <div className={s.total}>
+                            {_renderTextTotalTransaction(action)}
+                        </div>
+                        <div className={s.date}>
+                            <Datepicker visible={dateModalVisible} _handleSubmit={_handleSubmitDate}/>                    
+                        </div>
+                    </div>
                     <Tabs 
                         tabs={[
                             <HistoryTransaction 

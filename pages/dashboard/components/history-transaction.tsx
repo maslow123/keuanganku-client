@@ -44,7 +44,7 @@ const HistoryTransaction = ({ data, isNotFound, handleLoadMoreData, onDelete }) 
                                     </div>
                                 </div>
                             </div>                
-                            
+                            <div className='w-full border-b-2'></div>
                             {showLoadMoreButton(i, data.length - 1) && (
                                 <div className={s.loadButtonWrapper}>
                                     <button className={s.loadButton} onClick={handleLoadMoreData}>

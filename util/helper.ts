@@ -75,10 +75,15 @@ const showToast = (type: string, message: string) => {
     toast[type](message);
 };
 
-const formatDate = (number: number): string => {
+const formatDate = (number: number, withTimestamp: boolean = true): string => {
     const date = new Date(number * 1000);
-    return new Intl.DateTimeFormat('id-ID', { dateStyle: 'full', timeStyle: 'long' }).format(date);
+    const opt: Intl.DateTimeFormatOptions = { dateStyle: 'full' };
+    if (withTimestamp) {
+        opt.timeStyle = 'long';
+    }
+    return new Intl.DateTimeFormat('id-ID', opt).format(date);
 };
+
 
 export {
     hasError,

@@ -2,6 +2,7 @@ import { ChangeEventHandler, FC } from "react";
 import s from './Form.module.css';
 import Select from "./Select";
 import { Calendar } from 'react-date-range';
+import { id } from 'date-fns/locale'
 
 interface Props {
     label: string;
@@ -133,13 +134,23 @@ const Form:FC<Props> = ({ label, required, name, type, hasError, disabled, handl
             case 'date': {
                 return (
                     <>
-                        <Calendar                                                        
+                        <Calendar
+                            locale={id}                                                        
                             date={new Date(parseInt(value as string))}                        
                             onChange={date => {
                                 const e: any = {};
                                 e.target = {};
                                 e.target.name = 'date';
                                 e.target.value = date.getTime();
+
+                                const currentDate = new Date().toISOString().split('T')[0];
+                                let selectedDate = date;
+                                selectedDate.setDate(selectedDate.getDate() + 1);
+                                selectedDate = selectedDate.toISOString().split('T')[0];
+
+                                if (currentDate === selectedDate) {
+                                    e.target.value = new Date().getTime();
+                                }
 
                                 handleChange(e);
                             }}

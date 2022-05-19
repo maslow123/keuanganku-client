@@ -23,6 +23,7 @@ export interface ListTransactionRequest {
 
 export interface ListTransactionResponse extends ListTransactionRequest, GenericResponse {
     transaction: Transaction[];
+    total_transaction: number;
 };
 
 export interface CreateTransactionRequest {
