@@ -26,6 +26,14 @@ export interface ListTransactionResponse extends ListTransactionRequest, Generic
     total_transaction: number;
 };
 
+export interface DetailTransactionRequest {
+    id: number;
+};
+
+export interface DetailTransactionResponse extends GenericResponse {
+    transaction: Transaction;
+};
+
 export interface CreateTransactionRequest {
     pos_id: number;
     total: number;

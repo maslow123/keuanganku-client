@@ -15,14 +15,20 @@ export default function AuthProvider({ children }) {
     useEffect(() => {
         async function loadUserFromCookies() {            
             const token = Cookies.get('token');
-            let user: any = {};
+            const userCookie = Cookies.get('user');
+            let userData = {};
+            if (userCookie) {
+                userData = JSON.parse(userCookie);
+            }
 
             if (token) {                
-                if (user) { setUser({})};
+                if (userData) {
+                    setUser(userData);
+                }
             }
 
             setLoading(false)
-            if (user.error || !token) {
+            if (user?.error || !token) {
                 router.push('/login', null, { shallow: true });                
                 return;
             }            
@@ -31,7 +37,7 @@ export default function AuthProvider({ children }) {
     }, [])
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated: !!user, user, loading, splashScreen, setSplashScreen }}>
+        <AuthContext.Provider value={{ isAuthenticated: !!user, user, setUser, loading, splashScreen, setSplashScreen }}>
             {children}
         </AuthContext.Provider>
     )

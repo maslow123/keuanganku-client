@@ -84,6 +84,30 @@ const formatDate = (number: number, withTimestamp: boolean = true): string => {
     return new Intl.DateTimeFormat('id-ID', opt).format(date);
 };
 
+const getPartOfDay = (): string => {
+    const date = new Date();
+    const hours = date.getHours();
+
+    if (hours < 12) {
+        return 'Morning';
+    } else if (hours < 15) {
+        return 'Afternoon';
+    } else if (hours < 17) {
+        return 'Evening';
+    }
+
+    return 'Night';
+};
+
+const ellipsisText = (str: string) => {
+    if (str.length > 50) {
+        str = str.slice(0, 50);
+        str += '...';
+    }
+
+    return str;
+};
+
 
 export {
     hasError,
@@ -93,5 +117,7 @@ export {
     formatMoney,
     getToken,
     showToast,
-    formatDate
+    formatDate,
+    getPartOfDay,
+    ellipsisText
 };

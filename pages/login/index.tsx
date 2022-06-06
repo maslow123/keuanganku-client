@@ -64,6 +64,9 @@ export default function Login() {
         setInvalid(isValid);
 
         Cookies.set('token', resp.token);
+        Cookies.set('user', JSON.stringify(resp.user));
+        
+        ctx.setUser(resp.user);
         Router.push('/dashboard');
         if (error) { return false };
         return true;   

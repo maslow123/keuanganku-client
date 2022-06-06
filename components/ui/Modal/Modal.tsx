@@ -1,12 +1,13 @@
 import React, { FC, FormEventHandler, ReactNode } from 'react';
+import s from './Modal.module.css';
 
 interface Props {
     isVisible: boolean;
     handleCloseButton: Function;
     title: string;
     children: ReactNode;
-    handleSubmit: FormEventHandler<any> | undefined;
-    textSubmit: string;
+    handleSubmit?: FormEventHandler<any> | undefined;
+    textSubmit?: string;
     autoWidth?: boolean;
     scrollview?: boolean;
 }
@@ -17,7 +18,7 @@ const Modal: FC<Props> = ({ isVisible, handleCloseButton, title, children, handl
             {isVisible ? (
                 <form onSubmit={e => handleSubmit(e)}>
                     <div
-                        className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none"
+                        className={s.modal}
                     >
                         <div className={`relative ${!autoWidth && 'w-1/2'} my-6 mx-auto max-w-3xl xs:w-full`}>
                         {/*content*/}
@@ -49,12 +50,14 @@ const Modal: FC<Props> = ({ isVisible, handleCloseButton, title, children, handl
                             >
                                 Close
                             </button>
-                            <button
-                                className="bg-blue-theme text-white font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
-                                type="submit"
-                            >
-                                {textSubmit}
-                            </button>
+                            {textSubmit && (
+                                <button
+                                    className="bg-blue-theme text-white font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                                    type="submit"
+                                >
+                                    {textSubmit}
+                                </button>
+                            )}
                             </div>
                         </div>
                         </div>

@@ -4,9 +4,9 @@ import { status, transaction_action } from "@lib/constants";
 import { formatDate, formatMoney, hasError, showToast, validate } from "@util/helper";
 import { HistoryTransaction } from "pages/dashboard/components";
 import { useEffect, useState } from "react";
-import { create, deleteTransaction, list } from "services/transactions";
+import { create, deleteTransaction, detail, list } from "services/transactions";
 import { list as listPos } from "services/pos";
-import { CreateTransactionRequest, ListTransactionRequest, ListTransactionResponse } from "services/types/transactions";
+import { CreateTransactionRequest, DetailTransactionResponse, ListTransactionRequest, ListTransactionResponse } from "services/types/transactions";
 import { useRouter } from "next/router";
 import s from './Transactions.module.css';
 
@@ -108,7 +108,9 @@ export default function Transaction() {
             colors: []
         },
     ]);
-    const [dateModalVisible, setDateModalVisible] = useState<boolean>(false);
+    const [dateModalVisible, setDateModalVisible] = useState<boolean>(false);    
+    const [detailModalVisible, setDetailModalVisible] = useState<boolean>(false);
+    const [transactionDetail, setTransactionDetail] = useState<DetailTransactionResponse>();
 
     useEffect(() => {                
         const fetchDataTransactionAndPos = async () => {
@@ -359,14 +361,28 @@ export default function Transaction() {
                 text = `${formatDate(startDate, false)}`;    
             }
         }    
-        const title = !action ? 'income' : 'expenditure';    
+        const title = !action ? 'income' : 'outcome';    
         return (
             <label className="">
                 Total {title} on {text}
                 <br/><span className="font-bold"> {formatMoney(dataList?.total_transaction || 0)}</span>
             </label>
         );
-    }
+    };
+
+    const detailTransaction = async (showDetail, transactionId) => {
+        setDetailModalVisible(showDetail);
+        if (transactionId) {
+            const data = await detail(transactionId);        
+            if (data.status !== status.OK) {
+                showToast('error', data.error);
+                return
+            }
+
+            setTransactionDetail(data);
+        }
+
+    };
 
     return (
         <Layout>
@@ -389,6 +405,9 @@ export default function Transaction() {
                                 isNotFound={transactionInflowNotFound}
                                 handleLoadMoreData={_handleLoadMoreData}
                                 onDelete={onDeleteTransaction}
+                                showDetail={detailModalVisible}
+                                onShowDetail={detailTransaction}
+                                transactionDetail={transactionDetail}
                             />, 
                             <HistoryTransaction 
                                 key={1} 
@@ -396,6 +415,9 @@ export default function Transaction() {
                                 isNotFound={transactionOutflowNotFound}
                                 handleLoadMoreData={_handleLoadMoreData}
                                 onDelete={onDeleteTransaction}
+                                showDetail={detailModalVisible}
+                                onShowDetail={detailTransaction}          
+                                transactionDetail={transactionDetail}                  
                             />
                         ]}
                         titles={['Inflow', 'Outflow']}

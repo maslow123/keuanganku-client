@@ -1,8 +1,8 @@
 .fabWrapper {
-    @apply fixed right-24 bottom-24 xs:right-14 bottom-40 z-50 border-double;
+    @apply fixed right-24 bottom-24 xs:right-14 bottom-40 z-50 border-double xss:bottom-20;
 
 }
 
 .fabButton {
-    @apply p-0 bg-blue-theme rounded-full active:shadow-lg shadow w-16 h-16;
+    @apply p-0 bg-blue-theme rounded-full active:shadow-lg shadow w-16 h-16 xss:w-10 xss:h-10;
 }

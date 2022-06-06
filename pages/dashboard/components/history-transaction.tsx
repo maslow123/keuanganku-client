@@ -1,9 +1,11 @@
 import s from './../Dashboard.module.css';
-import { CloudDownloadIcon, DocumentTextIcon, RefreshIcon, TrashIcon } from '@heroicons/react/outline';
-import { formatDate, formatMoney } from '@util/helper';
+import { DocumentTextIcon, EyeIcon, RefreshIcon, TrashIcon } from '@heroicons/react/outline';
+import { ellipsisText, formatDate, formatMoney } from '@util/helper';
 import { transaction_type } from '@lib/constants';
+import { Modal } from '@components/ui';
+import DetailTransaction from './detail-transaction';
 
-const HistoryTransaction = ({ data, isNotFound, handleLoadMoreData, onDelete }) => {   
+const HistoryTransaction = ({ data, isNotFound, handleLoadMoreData, onDelete, showDetail, onShowDetail, transactionDetail }) => {   
     const showLoadMoreButton = (i: number, totalData: number) => {
         return (!isNotFound && data?.length >= 10 && (i === totalData));
     };
@@ -23,7 +25,7 @@ const HistoryTransaction = ({ data, isNotFound, handleLoadMoreData, onDelete }) 
                                     </div>
                                     <div className={s.posName}>                                    
                                         <span style={{ color: item.pos.color }}> {item.pos.name}</span> -
-                                        <span> {item.details}</span>
+                                        <span> {ellipsisText(item.details)}</span>
                                     </div>
                                     <div className={s.sendBy}>                                    
                                         <span className={item.type ? 'text-sky-500' : 'text-emerald-500'}> {transaction_type[item.type]}</span>
@@ -33,11 +35,17 @@ const HistoryTransaction = ({ data, isNotFound, handleLoadMoreData, onDelete }) 
                                     </div>
                                 </div>
                                 <div className={s.menu}>
-                                    <div className={`${s.download} cursor-pointer`} onClick={() => onDelete(item.id)}>
+                                    <div 
+                                        className={`${s.download} cursor-pointer`} 
+                                        onClick={() => onDelete(item.id)}
+                                    >
                                         <TrashIcon className="w-5 h-5"/>
                                     </div>
-                                    <div className={s.download}>
-                                        <CloudDownloadIcon className="w-5 h-5"/>
+                                    <div 
+                                        className={`${s.download} cursor-pointer`} 
+                                        onClick={() => onShowDetail(!showDetail, item.id)}
+                                    >
+                                        <EyeIcon className="w-5 h-5"/>
                                     </div>
                                     <div className={s.detail}>
                                         <DocumentTextIcon className="w-5 h-5"/>
@@ -52,6 +60,14 @@ const HistoryTransaction = ({ data, isNotFound, handleLoadMoreData, onDelete }) 
                                     </button>
                                 </div>
                             )}
+                            <Modal 
+                                isVisible={showDetail} 
+                                handleCloseButton={(isVisible) => onShowDetail(isVisible)}
+                                title="Detail transaction"
+                                autoWidth={true}                                                                
+                            >
+                                <DetailTransaction data={transactionDetail}/>
+                            </Modal>
                         </div>
                     ))                
                 }

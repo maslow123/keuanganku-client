@@ -3,19 +3,28 @@ import { Layout } from '@components/common';
 import s from './Dashboard.module.css'
 import Image from 'next/image';
 import { images } from "@util/images";
-import { CogIcon, BellIcon } from "@heroicons/react/outline";
+import { CogIcon, BellIcon, LogoutIcon } from "@heroicons/react/outline";
 import { Tabs } from '@components/ui';
 import { FirstTab, HistoryTransaction } from './components';
-import { list } from 'services/transactions';
+import { detail, list } from 'services/transactions';
 import { status } from '@lib/constants';
-import { ListTransactionRequest, ListTransactionResponse } from 'services/types/transactions';
+import { DetailTransactionResponse, ListTransactionRequest, ListTransactionResponse } from 'services/types/transactions';
 import { user } from 'services/balance';
+import { useAuth } from 'context/auth';
+import { getPartOfDay, showToast } from '@util/helper';
+import Cookies from 'js-cookie';
+import { useRouter } from "next/router";
 
 export default function Dashboard() { 
+    const router = useRouter();
+    const ctx = useAuth();
     const [transactionList, setTransactionList] = useState<ListTransactionResponse>(null); 
     const [balanceList, setBalanceList] = useState<any>(null); 
     const [transactionNotFound, setTransactionNotFound] = useState<boolean>(false);
-    const [balanceNotFound, setBalanceNotFound] = useState<boolean>(false);
+    const [_, setBalanceNotFound] = useState<boolean>(false);
+    const [detailModalVisible, setDetailModalVisible] = useState<boolean>(false);
+    const [transactionDetail, setTransactionDetail] = useState<DetailTransactionResponse>();
+
     useEffect(() => {                
         fetchTransactionData();
         fetchUserBalance();
@@ -41,6 +50,30 @@ export default function Dashboard() {
         }
         setBalanceNotFound(true);
     };
+    
+    const detailTransaction = async (showDetail, transactionId) => {
+        setDetailModalVisible(showDetail);
+        if (transactionId) {
+            const data = await detail(transactionId);        
+            if (data.status !== status.OK) {
+                showToast('error', data.error);
+                return
+            }
+
+            setTransactionDetail(data);
+        }
+
+    };
+
+    const logout = () => {
+        const cookies = Object.keys(Cookies.get());
+        cookies.forEach((cookieName: string) => {
+            Cookies.remove(cookieName, {});
+        });
+        
+        ctx.setSplashScreen(true);
+        router.push('/login');
+    };
     return (
         <Layout>
             <>
@@ -59,10 +92,10 @@ export default function Dashboard() {
                         </div>
                         <div className={s.sectionName}>
                             <div className={s.name}>
-                                Hi, Maslow
+                                Hi, {ctx?.user?.name}
                             </div>
                             <div className={s.greeting}>
-                                Selamat pagi
+                                Good {getPartOfDay()}
                             </div>
                         </div>
                     </div>
@@ -70,8 +103,11 @@ export default function Dashboard() {
                         <div className={s.settingButton}>
                             <CogIcon className="w-6 h-6"/>
                         </div>
-                        <div className={s.notificationButton}>
+                        <div className={s.settingButton}>
                             <BellIcon className="w-6 h-6"/>
+                        </div>
+                        <div className={s.notificationButton} onClick={logout}>
+                            <LogoutIcon className="w-6 h-6"/>
                         </div>
                     </div>
                 </div>
@@ -91,6 +127,9 @@ export default function Dashboard() {
                                 isNotFound={transactionNotFound} 
                                 handleLoadMoreData={() => {}}
                                 onDelete={(transactionId) => console.log(transactionId)}
+                                showDetail={detailModalVisible}
+                                onShowDetail={detailTransaction}
+                                transactionDetail={transactionDetail}
                             />
                         </div>
                     </>
