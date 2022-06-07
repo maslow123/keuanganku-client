@@ -1,7 +1,7 @@
 import { Header, Layout } from "@components/common";
 import { Datepicker, FAB, Form, Modal, Tabs } from "@components/ui";
 import { status, transaction_action } from "@lib/constants";
-import { formatDate, formatMoney, hasError, showToast, validate } from "@util/helper";
+import { formatDate, formatMoney, getPDFTitle, hasError, showToast, validate } from "@util/helper";
 import { HistoryTransaction } from "pages/dashboard/components";
 import { useEffect, useState } from "react";
 import { create, deleteTransaction, detail, list } from "services/transactions";
@@ -9,6 +9,9 @@ import { list as listPos } from "services/pos";
 import { CreateTransactionRequest, DetailTransactionResponse, ListTransactionRequest, ListTransactionResponse } from "services/types/transactions";
 import { useRouter } from "next/router";
 import s from './Transactions.module.css';
+import { DocumentTextIcon } from '@heroicons/react/outline';
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import { PDF } from "./components";
 
 export default function Transaction() {   
     const router = useRouter();
@@ -110,12 +113,14 @@ export default function Transaction() {
     ]);
     const [dateModalVisible, setDateModalVisible] = useState<boolean>(false);    
     const [detailModalVisible, setDetailModalVisible] = useState<boolean>(false);
-    const [transactionDetail, setTransactionDetail] = useState<DetailTransactionResponse>();
+    const [transactionDetail, setTransactionDetail] = useState<DetailTransactionResponse>();    
+    const [isClient, setIsClient] = useState(false)
 
     useEffect(() => {                
         const fetchDataTransactionAndPos = async () => {
             const getStateLoadingAfterFetchPos = await fetchPos();            
             await fetchDataTransaction(getStateLoadingAfterFetchPos, queryTransactionInflow, false);
+            setIsClient(true);
         };
 
         fetchDataTransactionAndPos();
@@ -384,6 +389,49 @@ export default function Transaction() {
 
     };
 
+    const documents = [
+        {
+            label: 'PDF',
+            onClick: (url: string) => {
+                console.log('clicked PDF', url);
+            }
+        },
+        {
+            label: 'Excel',
+            onClick: () => {}
+        }
+    ];
+
+    const pdfTitle = (isFilename: boolean) => {
+        const { currentQuery } = getCurrentTabData(action);
+        const { startDate, endDate } = currentQuery;
+
+        const currentDate = new Date().getTime();
+        let text = getPDFTitle(currentDate);
+        if (startDate > 0 && endDate > 0) {
+            let conjunction = ' to ';
+            if (isFilename) {
+                conjunction = '-';
+            }
+
+            const formatStartDate = isFilename ? getPDFTitle(startDate) : formatDate(startDate, false);
+            const formatEndDate = isFilename ? getPDFTitle(endDate) : formatDate(endDate, false);
+
+            text = `${formatStartDate}${conjunction}${formatEndDate}`;
+            if (getPDFTitle(startDate) === getPDFTitle(endDate)) {
+                text =  formatStartDate;    
+            }
+        }    
+        const type = action ? 'OUTCOME' : 'INCOME';
+        
+        let title = text;
+        if (isFilename) {
+            title = `${type} ${text}`;
+        }
+
+        return title;
+    };
+
     return (
         <Layout>
             <div className={s.container}>
@@ -394,7 +442,41 @@ export default function Transaction() {
                             {_renderTextTotalTransaction(action)}
                         </div>
                         <div className={s.date}>
-                            <Datepicker visible={dateModalVisible} _handleSubmit={_handleSubmitDate}/>                    
+                            <Datepicker visible={dateModalVisible} _handleSubmit={_handleSubmitDate}/>   
+                            <div className={s.row}>
+                                {isClient && documents.map((doc, key) => (
+                                    <PDFDownloadLink 
+                                        key={key}                    
+                                        document={
+                                            <PDF 
+                                                action={action}
+                                                title={pdfTitle(false)}
+                                                data={
+                                                    action === transaction_action.inflow
+                                                    ? transactionInflowList
+                                                    : transactionOutflowList
+                                                }
+                                            />
+                                        } 
+                                        fileName={`${pdfTitle(true)}.pdf`}
+                                    >
+                                        {({ loading, url }) => (
+                                            loading 
+                                            ? 'Loading document...' 
+                                            : (
+                                                <div 
+                                                    key={key} 
+                                                    className={`${s.iconButton} ${key === 0 && 'mx-2'}`}
+                                                    onClick={() => doc.onClick(url)}
+                                                >
+                                                    <span className="text-xs">{doc.label}</span>
+                                                </div>            
+                                            )
+                                        )}
+                                    </PDFDownloadLink>
+                                    
+                                ))}
+                            </div>         
                         </div>
                     </div>
                     <Tabs 

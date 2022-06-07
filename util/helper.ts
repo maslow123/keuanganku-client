@@ -1,6 +1,7 @@
 import Cookies from 'js-cookie';
 import { toast } from 'react-toastify';
 import { headers } from 'services/headers';
+import { ListTransactionResponse } from "services/types/transactions";
 
 const hasError = (errors: string[], key: string): Boolean => {
     const invalidEmail = 
@@ -108,16 +109,37 @@ const ellipsisText = (str: string) => {
     return str;
 };
 
+const getTotalTransaction = (data: ListTransactionResponse) => {
+    return (
+        data?.transaction?.length > 0 
+            ? data.transaction
+                .map(tx => tx.total)
+                .reduce((acc, amount) => acc + amount) 
+            : 0
+    );
+};
+
+const getPDFTitle = (dateTimestamp: number) => {
+    let date = new Date(dateTimestamp * 1000);
+    if (dateTimestamp === 0) {
+        date = new Date();
+    }
+
+    return `${date.toLocaleDateString('en-GB').split('/').reverse().join('')}`; // 'YYYYMMDD'
+};
+
 
 export {
+    getToken,
+    getTotalTransaction,
+    getPDFTitle,
     hasError,
     checkEmailFormat,
     validate,
     classNames,
     formatMoney,
-    getToken,
     showToast,
     formatDate,
     getPartOfDay,
-    ellipsisText
+    ellipsisText,
 };
