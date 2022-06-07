@@ -1,5 +1,5 @@
 import s from './../Dashboard.module.css';
-import { DocumentTextIcon, EyeIcon, RefreshIcon, TrashIcon } from '@heroicons/react/outline';
+import { EyeIcon, RefreshIcon, TrashIcon } from '@heroicons/react/outline';
 import { ellipsisText, formatDate, formatMoney } from '@util/helper';
 import { transaction_type } from '@lib/constants';
 import { Modal } from '@components/ui';
@@ -46,9 +46,6 @@ const HistoryTransaction = ({ data, isNotFound, handleLoadMoreData, onDelete, sh
                                         onClick={() => onShowDetail(!showDetail, item.id)}
                                     >
                                         <EyeIcon className="w-5 h-5"/>
-                                    </div>
-                                    <div className={s.detail}>
-                                        <DocumentTextIcon className="w-5 h-5"/>
                                     </div>
                                 </div>
                             </div>                

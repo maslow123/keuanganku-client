@@ -1,0 +1,47 @@
+/* User profile */
+.user {
+    @apply py-5;
+}
+.row {
+    @apply flex flex-row justify-between;
+    /* border: 1px solid red; */
+};
+
+.profile {
+    @apply flex flex-col justify-center items-center
+};
+.username {
+    @apply font-bold text-xl tracking-wide;
+};
+.email {
+    @apply text-sm font-thin text-gray-500;
+}
+.editButton {
+    @apply bg-sky-200 py-3 px-3 rounded-full text-blue-theme h-12;
+};
+
+/* Container */
+
+.container {
+    @apply py-10;
+}
+.card {
+    @apply justify-start cursor-pointer;
+}
+.icon {
+    @apply flex flex-col justify-center items-center
+}
+.label {
+    @apply mx-10
+}
+.title {
+    @apply font-semibold;
+}
+.subTitle {
+    @apply font-thin text-gray-500 text-sm;
+}
+
+/* App Version */
+.appVersion {
+    @apply font-thin text-gray-500 text-xs text-center;
+}

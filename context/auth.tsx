@@ -24,10 +24,11 @@ export default function AuthProvider({ children }) {
             if (token) {                
                 if (userData) {
                     setUser(userData);
+                    router.push('/dashboard');
+                    return
                 }
             }
-
-            setLoading(false)
+            setLoading(false);
             if (user?.error || !token) {
                 router.push('/login', null, { shallow: true });                
                 return;

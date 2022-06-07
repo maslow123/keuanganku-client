@@ -41,7 +41,6 @@ export default function Login() {
 
         let error = '';
         const errors = validate(payload);
-        console.log(errors);
         const invalidEmail = errors.find(err => err === 'invalid-format-email');
         if (invalidEmail) {
             setInvalidEmailFormat(true);
@@ -57,18 +56,19 @@ export default function Login() {
         let isValid = false;
         if (resp.status !== status.OK) {
             isValid = true;
-            error = resp.error;
+            error = resp.status === status.NotFound ? 'User atau password yang dimasukkan salah' : resp.error;
         }
 
         setErrorMessage(error);
         setInvalid(isValid);
 
+        if (isValid || error) { return false; }
+
         Cookies.set('token', resp.token);
         Cookies.set('user', JSON.stringify(resp.user));
-        
         ctx.setUser(resp.user);
+
         Router.push('/dashboard');
-        if (error) { return false };
         return true;   
     }
 

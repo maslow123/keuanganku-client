@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Layout } from '@components/common';
-import s from './Dashboard.module.css'
-import Image from 'next/image';
 import { images } from "@util/images";
-import { CogIcon, BellIcon, LogoutIcon } from "@heroicons/react/outline";
+import { LogoutIcon } from "@heroicons/react/outline";
 import { Tabs } from '@components/ui';
 import { FirstTab, HistoryTransaction } from './components';
 import { detail, list } from 'services/transactions';
@@ -12,8 +10,10 @@ import { DetailTransactionResponse, ListTransactionRequest, ListTransactionRespo
 import { user } from 'services/balance';
 import { useAuth } from 'context/auth';
 import { getPartOfDay, showToast } from '@util/helper';
-import Cookies from 'js-cookie';
 import { useRouter } from "next/router";
+import Image from 'next/image';
+import Cookies from 'js-cookie';
+import s from './Dashboard.module.css';
 
 export default function Dashboard() { 
     const router = useRouter();
@@ -99,13 +99,7 @@ export default function Dashboard() {
                             </div>
                         </div>
                     </div>
-                    <div className={s.rightHeader}>
-                        <div className={s.settingButton}>
-                            <CogIcon className="w-6 h-6"/>
-                        </div>
-                        <div className={s.settingButton}>
-                            <BellIcon className="w-6 h-6"/>
-                        </div>
+                    <div className={s.rightHeader}>                        
                         <div className={s.notificationButton} onClick={logout}>
                             <LogoutIcon className="w-6 h-6"/>
                         </div>

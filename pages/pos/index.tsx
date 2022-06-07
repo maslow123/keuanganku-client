@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import s from './Pos.module.css'
 import { Header, Layout } from '@components/common';
-import { RefreshIcon, TrashIcon, EyeIcon, PencilIcon } from '@heroicons/react/outline';
+import { RefreshIcon, TrashIcon, PencilIcon } from '@heroicons/react/outline';
 import { Card, FAB, Form, Modal, Tabs } from '@components/ui';
 import { formatMoney, hasError, showToast, validate } from '@util/helper';
 import { pos_type, status } from '@lib/constants';
@@ -12,8 +12,7 @@ import { CreatePosRequest, CreatePosResponse, ListPosRequest, ListPosResponse, U
 export default function Pos() { 
     const actionButton: JSX.Element[] = [
         <TrashIcon key={0} className="w-5 h-5"/>, 
-        <PencilIcon key={1} className="w-5 h-5"/>, 
-        <EyeIcon key={2} className="w-5 h-5"/>
+        <PencilIcon key={1} className="w-5 h-5"/>
     ];
 
     const [posInflowList, setPosInflowList] = useState<ListPosResponse>(null);
