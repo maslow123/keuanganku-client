@@ -1,3 +1,3 @@
-export { default as FirstTab} from './first-tab';
-export { default as HistoryTransaction} from './history-transaction';
-export { default as DetailTransaction} from './detail-transaction';
+export { default as FirstTab} from './FirstTab';
+export { default as HistoryTransaction} from './HistoryTransaction';
+export { default as DetailTransaction} from './DetailTransaction';

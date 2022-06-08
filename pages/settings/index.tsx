@@ -59,7 +59,12 @@ export default function Settings() {
                                 {ctx?.user?.email}
                         </span>
                         </div>
-                        <div className={`${s.row} items-center`}>
+                        <div 
+                            className={`${s.row} items-center`}
+                            onClick={() => {
+                                console.log('omama');
+                            }}
+                        >
                             <div className={`${s.row} ${s.editButton}`}>
                                 <PencilIcon className="w-4 h-6 mr-2"/>
                                 <span className={s.editText}>Edit profile</span>

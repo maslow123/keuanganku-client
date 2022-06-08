@@ -3,7 +3,7 @@ import { EyeIcon, RefreshIcon, TrashIcon } from '@heroicons/react/outline';
 import { ellipsisText, formatDate, formatMoney } from '@util/helper';
 import { transaction_type } from '@lib/constants';
 import { Modal } from '@components/ui';
-import DetailTransaction from './detail-transaction';
+import DetailTransaction from './DetailTransaction';
 
 const HistoryTransaction = ({ data, isNotFound, handleLoadMoreData, onDelete, showDetail, onShowDetail, transactionDetail }) => {   
     const showLoadMoreButton = (i: number, totalData: number) => {
