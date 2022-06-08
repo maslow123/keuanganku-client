@@ -24,3 +24,10 @@ export interface RegisterRequest {
 };
 
 export interface RegisterResponse extends GenericResponse, User {}
+
+export interface UpdateRequest {
+    name: string;
+    email: string;
+};
+
+export interface UpdateResponse extends GenericResponse {};

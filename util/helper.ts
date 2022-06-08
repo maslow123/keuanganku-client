@@ -2,7 +2,6 @@ import Cookies from 'js-cookie';
 import { toast } from 'react-toastify';
 import { headers } from 'services/headers';
 import { ListTransactionResponse } from "services/types/transactions";
-import { useAuth } from 'context/auth';
 import { NextRouter } from 'next/router';
 
 const hasError = (errors: string[], key: string): Boolean => {

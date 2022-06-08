@@ -1,12 +1,17 @@
+import React, { useState } from 'react';
 import { Header, Layout } from "@components/common";
 import { PencilIcon, KeyIcon, IdentificationIcon, LogoutIcon } from "@heroicons/react/outline";
 import Image from "next/image";
 import { images } from "@util/images";
-import { Card } from "@components/ui";
+import { Card, Form } from "@components/ui";
 import { useAuth } from "context/auth";
 import s from "./Settings.module.css";
 import { useRouter } from "next/router";
-import { logout } from "@util/helper";
+import { hasError, logout, showToast, validate } from "@util/helper";
+import { Modal } from "@components/ui";
+import { status } from '@lib/constants';
+import updateUser from 'services/users/update';
+import { UpdateRequest } from 'services/types/users';
 
 
 export default function Settings() { 
@@ -34,6 +39,72 @@ export default function Settings() {
             }
         }
     ];
+
+    const form = [
+        {
+            label: 'Nama',
+            name: 'name',
+            type: 'text'
+        },
+        {
+            label: 'Email',
+            name: 'email',
+            type: 'text'
+        }        
+    ];
+
+    const [payload, setPayload] = useState<UpdateRequest>({
+        name: ctx?.user?.name,
+        email: ctx?.user?.email
+    });
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [visible, setVisible] = useState<boolean>(false);
+    const [errorList, setErrorList] = useState<string[]>(null);
+    const [invalidEmailFormat, setInvalidEmailFormat] = useState<boolean>(false);
+
+
+    const _handleSubmit = async (e) => {
+        e.preventDefault();
+        setInvalidEmailFormat(false);
+
+        let error = '';
+        const errors = validate(payload);
+        const invalidEmail = errors.find(err => err === 'invalid-format-email');
+        if (invalidEmail) {
+            setInvalidEmailFormat(true);
+        }        
+        
+        setErrorList(errors);
+        if (errors.length > 0) { return false };
+        
+        setIsLoading(true);
+        const resp: any = await updateUser(payload);
+        setIsLoading(false);
+
+        let isValid = false;
+        if (resp.status !== status.OK) {
+            isValid = true;
+            error = resp.error;
+        }
+        if (error) { return false };
+
+        showToast('success', 'Data sucessfully edited');
+        setVisible(!visible);
+
+        ctx.setUser({
+            ...ctx.user,
+            ...payload
+        });
+
+        return true;   
+    };
+    const _handleChange = (evt): void => {
+        const value = evt.target.value;
+        const name = evt.target.name;
+
+        setPayload({ ...payload, [name]: value });
+    };
+
     return (
         <Layout>            
             <Header title="Settings"/>
@@ -60,9 +131,9 @@ export default function Settings() {
                         </span>
                         </div>
                         <div 
-                            className={`${s.row} items-center`}
+                            className={`${s.row} items-center cursor-pointer`}
                             onClick={() => {
-                                console.log('omama');
+                                setVisible(!visible);
                             }}
                         >
                             <div className={`${s.row} ${s.editButton}`}>
@@ -97,6 +168,35 @@ export default function Settings() {
                         App Version 1.0.0
                     </div>
                 </div>
+
+                <Modal
+                    title="Edit Profile"
+                    isVisible={visible}
+                    handleCloseButton={setVisible}
+                    handleSubmit={_handleSubmit}
+                    textSubmit="Save changes"
+                    scrollview={true}
+
+                >
+                    {form.map((item, i) => (
+                        <Form
+                            disabled={false}
+                            key={i}
+                            label={item.label}
+                            name={item.name}
+                            type={item.type}
+                            value={payload[item.name]}
+                            required
+                            handleChange={_handleChange}
+                            hasError={hasError(errorList, item.name)}
+                            errorMessage={                                         
+                                item.name === 'email' && invalidEmailFormat 
+                                ? 'Kesalahan pada format Email' 
+                                : ''
+                            }
+                        />
+                    ))}
+                </Modal>
             </div>
         </Layout>
     );
