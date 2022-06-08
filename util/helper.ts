@@ -2,6 +2,8 @@ import Cookies from 'js-cookie';
 import { toast } from 'react-toastify';
 import { headers } from 'services/headers';
 import { ListTransactionResponse } from "services/types/transactions";
+import { useAuth } from 'context/auth';
+import { NextRouter } from 'next/router';
 
 const hasError = (errors: string[], key: string): Boolean => {
     const invalidEmail = 
@@ -128,6 +130,16 @@ const getPDFTitle = (dateTimestamp: number) => {
     return `${date.toLocaleDateString('en-GB').split('/').reverse().join('')}`; // 'YYYYMMDD'
 };
 
+const logout = (ctx: any, router: NextRouter) => {
+    const cookies = Object.keys(Cookies.get());
+    cookies.forEach((cookieName: string) => {
+        Cookies.remove(cookieName, {});
+    });
+    
+    ctx.setSplashScreen(true);
+    router.push('/login');
+};
+
 
 export {
     getToken,
@@ -142,4 +154,5 @@ export {
     formatDate,
     getPartOfDay,
     ellipsisText,
+    logout
 };

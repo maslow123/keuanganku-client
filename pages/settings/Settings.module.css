@@ -43,5 +43,5 @@
 
 /* App Version */
 .appVersion {
-    @apply font-thin text-gray-500 text-xs text-center;
+    @apply font-thin text-gray-500 text-xs text-center pt-5;
 }

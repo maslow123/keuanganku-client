@@ -42,11 +42,15 @@
 
 /* Transaction */
 .transactions {
-    @apply flex flex-row justify-around flex-wrap;
+    @apply flex flex-row justify-around flex-wrap xs:flex-col;
 }
 
 .section {
-    @apply mt-5 rounded-xl flex-1 ml-8;
+    @apply rounded-xl;
+    flex: 1 1 auto;
+}
+.section:nth-child(2) {
+    @apply ml-3 xs:ml-0 xs:mt-2;
 }
 
 .button {

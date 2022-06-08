@@ -9,7 +9,7 @@ import { status } from '@lib/constants';
 import { DetailTransactionResponse, ListTransactionRequest, ListTransactionResponse } from 'services/types/transactions';
 import { user } from 'services/balance';
 import { useAuth } from 'context/auth';
-import { getPartOfDay, showToast } from '@util/helper';
+import { getPartOfDay, logout, showToast } from '@util/helper';
 import { useRouter } from "next/router";
 import Image from 'next/image';
 import Cookies from 'js-cookie';
@@ -65,14 +65,8 @@ export default function Dashboard() {
 
     };
 
-    const logout = () => {
-        const cookies = Object.keys(Cookies.get());
-        cookies.forEach((cookieName: string) => {
-            Cookies.remove(cookieName, {});
-        });
-        
-        ctx.setSplashScreen(true);
-        router.push('/login');
+    const logoutAccount = async () => {
+        await logout(ctx, router);
     };
     return (
         <Layout>
@@ -100,7 +94,7 @@ export default function Dashboard() {
                         </div>
                     </div>
                     <div className={s.rightHeader}>                        
-                        <div className={s.notificationButton} onClick={logout}>
+                        <div className={s.notificationButton} onClick={logoutAccount}>
                             <LogoutIcon className="w-6 h-6"/>
                         </div>
                     </div>

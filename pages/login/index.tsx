@@ -134,7 +134,7 @@ export default function Login() {
                                     Lupa Password?
                                 </div>
 
-                                <button className="bg-red rounded-full py-2 px-5 h-10 mb-3" disabled={isLoading}>
+                                <button className="bg-red rounded-full py-2 px-5 h-10 mb-3" disabled={isLoading} type="submit">
                                     <span className="uppercase text-black tracking-widest">
                                         Login
                                     </span>
