@@ -31,3 +31,11 @@ export interface UpdateRequest {
 };
 
 export interface UpdateResponse extends GenericResponse {};
+
+export interface ChangePasswordRequest {
+    old_password: string;
+    password: string;
+    confirm_password: string;
+};
+
+export interface ChangePasswordResponse extends GenericResponse {};

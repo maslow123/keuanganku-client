@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { FC, useState } from 'react';
 import { Header, Layout } from "@components/common";
 import { PencilIcon, KeyIcon, IdentificationIcon, LogoutIcon } from "@heroicons/react/outline";
 import Image from "next/image";
@@ -11,7 +11,8 @@ import { hasError, logout, showToast, validate } from "@util/helper";
 import { Modal } from "@components/ui";
 import { status } from '@lib/constants';
 import updateUser from 'services/users/update';
-import { UpdateRequest } from 'services/types/users';
+import { ChangePasswordRequest, UpdateRequest } from 'services/types/users';
+import { changePassword } from 'services/users';
 
 
 export default function Settings() { 
@@ -22,13 +23,12 @@ export default function Settings() {
             icon: <KeyIcon className="w-6 h-6"/>,
             title: 'Password',
             subTitle: 'Change password settings',
-            onClick: () => console.log('clicked')
+            onClick: () => _handleChangePassword()
         },
         {
             icon: <IdentificationIcon className="w-6 h-6"/>,
             title: 'Privacy',
             subTitle: 'Change privacy settings',
-            onClick: () => console.log('clicked')
         },
         {
             icon: <LogoutIcon className="w-6 h-6"/>,
@@ -40,31 +40,64 @@ export default function Settings() {
         }
     ];
 
-    const form = [
+    const updateProfileForm = [
         {
             label: 'Nama',
             name: 'name',
-            type: 'text'
+            type: 'text',
+            
         },
         {
             label: 'Email',
             name: 'email',
-            type: 'text'
-        }        
+            type: 'text',
+            
+        }
     ];
 
-    const [payload, setPayload] = useState<UpdateRequest>({
+    const changePasswordForm = [
+        {
+            label: 'Current Password',
+            name: 'old_password',
+            type: 'password',        
+        },                
+        {
+            label: 'Password',
+            name: 'password',
+            type: 'password',            
+        },                
+        {
+            label: 'Confirm Password',
+            name: 'confirm_password',
+            type: 'password'            
+        }       
+    ]
+
+    const [updateProfilePayload, setUpdateProfilePayload] = useState<UpdateRequest>({
         name: ctx?.user?.name,
         email: ctx?.user?.email
     });
+
+    const [changePasswordPayload, setChangePasswordPayload] = useState<ChangePasswordRequest>({
+        old_password: '',
+        password: '',
+        confirm_password: ''
+    });
+    
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [visible, setVisible] = useState<boolean>(false);
     const [errorList, setErrorList] = useState<string[]>(null);
     const [invalidEmailFormat, setInvalidEmailFormat] = useState<boolean>(false);
+    const [passwordNotMatch, setPasswordNotMatch] = useState<boolean>(false);
+    const [formType, setFormType] = useState<string>('profile');
 
 
     const _handleSubmit = async (e) => {
         e.preventDefault();
+        const payload: any = formType === 'profile' ? updateProfilePayload : changePasswordPayload;
+        const func = formType === 'profile' ? updateUser : changePassword;
+        setPasswordNotMatch(false);
+
         setInvalidEmailFormat(false);
 
         let error = '';
@@ -73,18 +106,23 @@ export default function Settings() {
         if (invalidEmail) {
             setInvalidEmailFormat(true);
         }        
+        const passwordNotMatch = errors.find(err => err === 'password-not-match');
+        if (passwordNotMatch) {
+            setPasswordNotMatch(true);
+        }
         
         setErrorList(errors);
         if (errors.length > 0) { return false };
         
         setIsLoading(true);
-        const resp: any = await updateUser(payload);
+        const resp: any = await func(payload);
         setIsLoading(false);
 
         let isValid = false;
         if (resp.status !== status.OK) {
             isValid = true;
             error = resp.error;
+            showToast('error', resp.error);
         }
         if (error) { return false };
 
@@ -93,18 +131,71 @@ export default function Settings() {
 
         ctx.setUser({
             ...ctx.user,
-            ...payload
+            ...updateProfilePayload
         });
 
         return true;   
     };
     const _handleChange = (evt): void => {
+        const setPayload = formType === 'profile' ? setUpdateProfilePayload : setChangePasswordPayload;
+        const payload: any = formType === 'profile' ? updateProfilePayload : changePasswordPayload;
+
         const value = evt.target.value;
         const name = evt.target.name;
 
         setPayload({ ...payload, [name]: value });
     };
 
+    const _handleEditProfile = () => {        
+        setVisible(!visible);
+        setFormType('profile');
+    };
+
+    const _handleChangePassword = () => {
+        setVisible(!visible);
+        setFormType('change-password');
+    };
+
+    const _handleCloseModal = (isVisible) => {
+        setVisible(isVisible);
+        if (formType === 'change-password') { resetChangePasswordPayload() };
+    };
+    
+    const renderForm = () => {
+        const form = formType === 'profile' ? updateProfileForm : changePasswordForm;
+        const payload = formType === 'profile' ? updateProfilePayload : changePasswordPayload;
+
+
+        return form.map((f, key) => (
+            <Form
+                disabled={false}
+                key={key}
+                label={f.label}
+                name={f.name}
+                type={f.type}
+                value={payload[f.name]}
+                required
+                handleChange={_handleChange}
+                hasError={hasError(errorList, f.name)}
+                errorMessage={                                         
+                    f.name === 'email' && invalidEmailFormat 
+                    ? 'Kesalahan pada format Email' 
+                    : f.name === 'confirm_password' && passwordNotMatch
+                        ? 'Password tidak sesuai, harap periksa kembali'
+                        : ''
+                }
+            />
+        ));
+    };
+
+    const resetChangePasswordPayload = () => {
+        for (const prop of Object.getOwnPropertyNames(changePasswordPayload)) {
+            changePasswordPayload[prop] = '';
+        };
+
+
+        setChangePasswordPayload({ ...changePasswordPayload });
+    };
     return (
         <Layout>            
             <Header title="Settings"/>
@@ -132,9 +223,7 @@ export default function Settings() {
                         </div>
                         <div 
                             className={`${s.row} items-center cursor-pointer`}
-                            onClick={() => {
-                                setVisible(!visible);
-                            }}
+                            onClick={_handleEditProfile}
                         >
                             <div className={`${s.row} ${s.editButton}`}>
                                 <PencilIcon className="w-4 h-6 mr-2"/>
@@ -172,30 +261,13 @@ export default function Settings() {
                 <Modal
                     title="Edit Profile"
                     isVisible={visible}
-                    handleCloseButton={setVisible}
+                    handleCloseButton={_handleCloseModal}
                     handleSubmit={_handleSubmit}
                     textSubmit="Save changes"
                     scrollview={true}
 
                 >
-                    {form.map((item, i) => (
-                        <Form
-                            disabled={false}
-                            key={i}
-                            label={item.label}
-                            name={item.name}
-                            type={item.type}
-                            value={payload[item.name]}
-                            required
-                            handleChange={_handleChange}
-                            hasError={hasError(errorList, item.name)}
-                            errorMessage={                                         
-                                item.name === 'email' && invalidEmailFormat 
-                                ? 'Kesalahan pada format Email' 
-                                : ''
-                            }
-                        />
-                    ))}
+                    {renderForm()}
                 </Modal>
             </div>
         </Layout>
