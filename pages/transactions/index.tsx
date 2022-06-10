@@ -395,10 +395,6 @@ export default function Transaction() {
             onClick: (url: string) => {
                 console.log('clicked PDF', url);
             }
-        },
-        {
-            label: 'Excel',
-            onClick: () => {}
         }
     ];
 
