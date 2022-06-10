@@ -392,32 +392,32 @@ export default function Transaction() {
     const documents = [
         {
             label: 'PDF',
-            onClick: (url: string) => {
-                console.log('clicked PDF', url);
-            }
+            onClick: (url: string) => {}
         }
     ];
 
     const pdfTitle = (isFilename: boolean) => {
         const { currentQuery } = getCurrentTabData(action);
-        const { startDate, endDate } = currentQuery;
+        let { startDate, endDate } = currentQuery;
+        startDate = startDate === 0 ? Math.floor(new Date().getTime() / 1000) : startDate;
+        endDate = endDate === 0 ? Math.floor(new Date().getTime() / 1000) : endDate;
 
         const currentDate = new Date().getTime();
         let text = getPDFTitle(currentDate);
-        if (startDate > 0 && endDate > 0) {
-            let conjunction = ' to ';
-            if (isFilename) {
-                conjunction = '-';
-            }
 
-            const formatStartDate = isFilename ? getPDFTitle(startDate) : formatDate(startDate, false);
-            const formatEndDate = isFilename ? getPDFTitle(endDate) : formatDate(endDate, false);
+        let conjunction = ' to ';
+        if (isFilename) {
+            conjunction = '-';
+        }
 
-            text = `${formatStartDate}${conjunction}${formatEndDate}`;
-            if (getPDFTitle(startDate) === getPDFTitle(endDate)) {
-                text =  formatStartDate;    
-            }
-        }    
+        const formatStartDate = isFilename ? getPDFTitle(startDate) : formatDate(startDate, false);
+        const formatEndDate = isFilename ? getPDFTitle(endDate) : formatDate(endDate, false);
+
+        text = `${formatStartDate}${conjunction}${formatEndDate}`;
+        if (getPDFTitle(startDate) === getPDFTitle(endDate)) {
+            text =  formatStartDate;    
+        }
+           
         const type = action ? 'OUTCOME' : 'INCOME';
         
         let title = text;
