@@ -12,6 +12,7 @@ import s from './Transactions.module.css';
 import { DocumentTextIcon } from '@heroicons/react/outline';
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import { PDF } from "./components";
+import { ToastOptions } from "react-toastify";
 
 export default function Transaction() {   
     const router = useRouter();
@@ -204,7 +205,14 @@ export default function Transaction() {
             setForm([ ...form ]);
         }
         if (data.status === status.NotFound) {
-            router.back();
+            const config: ToastOptions = {
+                closeOnClick: true,
+                autoClose: 2000,
+                onClose: () => {
+                    router.push('/pos');
+                }
+            };
+            showToast('error', 'Harap buat POS terlebih dahulu', config);
             return
         }
         return currentLoading

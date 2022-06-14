@@ -39,3 +39,13 @@ export interface ChangePasswordRequest {
 };
 
 export interface ChangePasswordResponse extends GenericResponse {};
+
+export interface UploadImageRequest {
+    file: File;
+};
+
+export interface UploadImageResponse {
+    id: string;
+    size: number;
+    type: string
+}

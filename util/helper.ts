@@ -1,5 +1,5 @@
 import Cookies from 'js-cookie';
-import { toast } from 'react-toastify';
+import { toast, ToastOptions } from 'react-toastify';
 import { headers } from 'services/headers';
 import { ListTransactionResponse } from "services/types/transactions";
 import { NextRouter } from 'next/router';
@@ -73,8 +73,8 @@ const getToken = () => {
     headers.headers.authorization = `Bearer ${token}`;
 };
 
-const showToast = (type: string, message: string) => {    
-    toast[type](message);
+const showToast = (type: string, message: string, config?: ToastOptions) => {    
+    toast[type](message, config);
 };
 
 const formatDate = (number: number, withTimestamp: boolean = true): string => {

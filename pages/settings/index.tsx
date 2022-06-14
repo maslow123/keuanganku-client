@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { ChangeEvent, FormEvent, useRef, useState } from 'react';
 import { Header, Layout } from "@components/common";
 import { PencilIcon, KeyIcon, IdentificationIcon, LogoutIcon } from "@heroicons/react/outline";
 import Image from "next/image";
@@ -12,7 +12,9 @@ import { Modal } from "@components/ui";
 import { status } from '@lib/constants';
 import updateUser from 'services/users/update';
 import { ChangePasswordRequest, UpdateRequest } from 'services/types/users';
-import { changePassword } from 'services/users';
+import { changePassword, uploadImage } from 'services/users';
+import Spinner from '@components/ui/Spinner';
+import { Loading } from './types';
 
 
 export default function Settings() { 
@@ -84,17 +86,31 @@ export default function Settings() {
         confirm_password: ''
     });
     
-    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [isLoading, setIsLoading] = useState<Loading>({
+        changeProfile: false,
+        changePassword: false,
+        changeImage: false
+    });
+    
     const [visible, setVisible] = useState<boolean>(false);
     const [errorList, setErrorList] = useState<string[]>(null);
     const [invalidEmailFormat, setInvalidEmailFormat] = useState<boolean>(false);
     const [passwordNotMatch, setPasswordNotMatch] = useState<boolean>(false);
     const [formType, setFormType] = useState<string>('profile');
+    const fileInput = useRef<any>(null);
 
+    const setLoading = (type: string, state: boolean) => {
+        setIsLoading({
+            ...isLoading,
+            [type]: state
+        });
+    };
 
-    const _handleSubmit = async (e) => {
+    const _handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const payload: any = formType === 'profile' ? updateProfilePayload : changePasswordPayload;
+        const key = formType === 'profile' ? 'changeProfile' : 'changePassword';
+
         const func = formType === 'profile' ? updateUser : changePassword;
         setPasswordNotMatch(false);
 
@@ -114,9 +130,9 @@ export default function Settings() {
         setErrorList(errors);
         if (errors.length > 0) { return false };
         
-        setIsLoading(true);
+        setLoading(key, true);
         const resp: any = await func(payload);
-        setIsLoading(false);
+        setLoading(key, false);
 
         let isValid = false;
         if (resp.status !== status.OK) {
@@ -136,7 +152,7 @@ export default function Settings() {
 
         return true;   
     };
-    const _handleChange = (evt): void => {
+    const _handleChange = (evt: ChangeEvent<HTMLInputElement>): void => {
         const setPayload = formType === 'profile' ? setUpdateProfilePayload : setChangePasswordPayload;
         const payload: any = formType === 'profile' ? updateProfilePayload : changePasswordPayload;
 
@@ -160,6 +176,27 @@ export default function Settings() {
         setVisible(isVisible);
         if (formType === 'change-password') { resetChangePasswordPayload() };
     };
+    
+    const _handleClickUpload = () => {
+        fileInput.current.click();
+    };
+
+    const _handleUploadImage = async (e: ChangeEvent<HTMLInputElement>) => {
+        setLoading('changeImage', true);
+
+        const formData = new FormData();
+        formData.append(e.target.name, e.target.files[0]);
+
+        const resp = await uploadImage(formData);
+        if(resp?.id) {
+            ctx.setUser({
+                ...ctx.user,
+                photo: `${resp.id}${resp.type}`
+            });
+            
+            setLoading('changeImage', false);
+        }
+    }
     
     const renderForm = () => {
         const form = formType === 'profile' ? updateProfileForm : changePasswordForm;
@@ -196,6 +233,7 @@ export default function Settings() {
 
         setChangePasswordPayload({ ...changePasswordPayload });
     };
+
     return (
         <Layout>            
             <Header title="Settings"/>
@@ -203,16 +241,33 @@ export default function Settings() {
                 <div className={s.user}>
                     <div className={s.row}>
                         <div className={s.profile}>
-                        <div className={s.avatar}>
-                                <Image
-                                    alt="avatar"
-                                    src={images.avatar}
-                                    layout="intrinsic"
-                                    quality={100}
-                                    width={100}
-                                    height={100}
-                                    className="rounded-full"
-                                />
+                        <div className={`${s.avatar} ${isLoading.changeImage && 'opacity-30'}`}>
+                            <Image
+                                alt="avatar"
+                                src={ctx?.user?.photo ? `${process.env.NEXT_PUBLIC_IMAGE_URL}/${ctx?.user?.photo}` : images.avatar}
+                                layout="intrinsic"
+                                quality={100}
+                                width={100}
+                                height={100}
+                                className={`${s.image} ${isLoading.changeImage && 'opacity-30'}`}
+                            />
+                            <div className={`${s.middle} ${isLoading.changeImage && 'opacity-100'}`}>
+                                <div className={s.text} onClick={_handleClickUpload}>
+                                    <input 
+                                        disabled={isLoading.changeImage}
+                                        name="file"
+                                        type="file" 
+                                        hidden 
+                                        ref={fileInput} 
+                                        accept="image/png, image/gif, image/jpeg"
+                                        onChange={_handleUploadImage}
+                                    />
+                                    {isLoading.changeImage 
+                                        ? <Spinner isVisible/>
+                                        : <PencilIcon className="w-5 h-5"/>
+                                    }
+                                </div>
+                            </div>
                         </div>
                         <span className={s.username}>
                                 {ctx?.user?.name}
@@ -254,7 +309,7 @@ export default function Settings() {
                         </Card>
                     ))}
                     <div className={s.appVersion}>
-                        App Version 1.0.0
+                        App version {process.env.NEXT_PUBLIC_APP_VERSION}
                     </div>
                 </div>
 

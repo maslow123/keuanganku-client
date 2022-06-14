@@ -12,7 +12,6 @@ import { useAuth } from 'context/auth';
 import { getPartOfDay, logout, showToast } from '@util/helper';
 import { useRouter } from "next/router";
 import Image from 'next/image';
-import Cookies from 'js-cookie';
 import s from './Dashboard.module.css';
 
 export default function Dashboard() { 
@@ -25,7 +24,7 @@ export default function Dashboard() {
     const [detailModalVisible, setDetailModalVisible] = useState<boolean>(false);
     const [transactionDetail, setTransactionDetail] = useState<DetailTransactionResponse>();
 
-    useEffect(() => {                
+    useEffect(() => {     
         fetchTransactionData();
         fetchUserBalance();
 
@@ -76,7 +75,7 @@ export default function Dashboard() {
                         <div className={s.avatar}>
                             <Image
                                 alt="avatar"
-                                src={images.avatar}
+                                src={ctx?.user?.photo ? `${process.env.NEXT_PUBLIC_IMAGE_URL}/${ctx?.user?.photo}` : images.avatar}
                                 layout="intrinsic"
                                 quality={100}
                                 width={50}
