@@ -97,8 +97,8 @@ export default function Login() {
                             src={images.login}
                             layout="intrinsic"
                             quality={100}
-                            width={500}
-                            height={500}
+                            width={250}
+                            height={250}
                         />
                     </div>
                     <div className={s.caption}>

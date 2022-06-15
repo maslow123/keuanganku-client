@@ -1,20 +1,20 @@
-import React, { ChangeEvent, FormEvent, useRef, useState } from 'react';
+import React, { ChangeEvent, FormEvent, useEffect, useRef, useState } from 'react';
 import { Header, Layout } from "@components/common";
 import { PencilIcon, KeyIcon, IdentificationIcon, LogoutIcon } from "@heroicons/react/outline";
-import Image from "next/image";
 import { images } from "@util/images";
 import { Card, Form } from "@components/ui";
 import { useAuth } from "context/auth";
-import s from "./Settings.module.css";
 import { useRouter } from "next/router";
 import { hasError, logout, showToast, validate } from "@util/helper";
 import { Modal } from "@components/ui";
 import { status } from '@lib/constants';
-import updateUser from 'services/users/update';
 import { ChangePasswordRequest, UpdateRequest } from 'services/types/users';
-import { changePassword, uploadImage } from 'services/users';
-import Spinner from '@components/ui/Spinner';
+import { changePassword, updateUser, uploadImage } from 'services/users';
 import { Loading } from './types';
+import Image from "next/image";
+import Spinner from '@components/ui/Spinner';
+import s from "./Settings.module.css";
+import Cookies from 'js-cookie';
 
 
 export default function Settings() { 
@@ -80,6 +80,7 @@ export default function Settings() {
         email: ctx?.user?.email
     });
 
+    console.log(updateProfilePayload);
     const [changePasswordPayload, setChangePasswordPayload] = useState<ChangePasswordRequest>({
         old_password: '',
         password: '',
@@ -145,10 +146,14 @@ export default function Settings() {
         showToast('success', 'Data sucessfully edited');
         setVisible(!visible);
 
-        ctx.setUser({
-            ...ctx.user,
-            ...updateProfilePayload
-        });
+        if (formType === 'profile') {
+            const user = {
+                ...ctx.user,
+                ...updateProfilePayload
+            };
+            ctx.setUser({ ...user });
+            Cookies.set('user', JSON.stringify(user));
+        }
 
         return true;   
     };
@@ -189,11 +194,12 @@ export default function Settings() {
 
         const resp = await uploadImage(formData);
         if(resp?.id) {
-            ctx.setUser({
+            const user = {
                 ...ctx.user,
                 photo: `${resp.id}${resp.type}`
-            });
-            
+            };
+            ctx.setUser({ ...user });
+            Cookies.set('user', JSON.stringify(user));
             setLoading('changeImage', false);
         }
     }
@@ -263,7 +269,7 @@ export default function Settings() {
                                         onChange={_handleUploadImage}
                                     />
                                     {isLoading.changeImage 
-                                        ? <Spinner isVisible/>
+                                        ? <Spinner />
                                         : <PencilIcon className="w-5 h-5"/>
                                     }
                                 </div>

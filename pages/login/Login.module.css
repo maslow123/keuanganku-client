@@ -2,7 +2,9 @@
     border: 1px solid red;
 }
 .parent {
-    @apply grid grid-cols-2 h-full;
+    @apply grid grid-cols-2 h-full
+        xs:flex flex-col-reverse;
+    ;
 }
 
 /* Left pane */
@@ -10,7 +12,7 @@
     @apply flex flex-col bg-blue justify-center;
 }
 .image {
-    @apply text-center align-middle ;
+    @apply text-center align-middle;
 }
 .caption {
     @apply xs:text-xl text-center text-3xl text-white uppercase tracking-widest;
@@ -44,7 +46,8 @@
 }
 
 .loginFormWrapper {
-    @apply mt-3 text-xs w-full max-w-3xl;
+    @apply mt-3 text-xs w-full max-w-3xl
+        xs:pb-10;
 }
 
 .form {
@@ -52,5 +55,6 @@
 }
 
 .registerText {
-    @apply xs:text-xs text-sm;
+    @apply text-sm
+        xs:text-xs
 }

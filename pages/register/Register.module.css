@@ -1,5 +1,6 @@
 .parent {
-    @apply grid grid-cols-2 h-full;
+    @apply grid grid-cols-2 h-full
+        xs:flex flex-col-reverse;
 }
 
 /* Left pane */
@@ -23,7 +24,8 @@
 /* Right Pane */
 .rightpane {
     height: fit-content;
-    @apply flex flex-col h-full;
+    @apply flex flex-col h-full
+        xs:overflow-auto;
 }
 
 .appNameWrapper {
@@ -43,8 +45,9 @@
     @apply xs:text-lg font-bold uppercase font-sans text-gray-400 text-3xl;    
 }
 
-.loginFormWrapper {
-    @apply mt-3 text-xs w-full max-w-3xl;
+.registerFormWrapper {
+    @apply mt-3 text-xs w-full max-w-3xl
+        xs:pb-0;;
 }
 
 .form {

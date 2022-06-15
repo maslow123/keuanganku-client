@@ -1,11 +1,9 @@
 import React, { FC } from 'react';
 import s from './Spinner.module.css';
 
-interface Props {
-    isVisible: boolean;
-}
+interface Props {}
 
-const Spinner: FC<Props> = ({ isVisible }) => {    
+const Spinner: FC<Props> = () => {    
     return (
         <div className={s.spinner}></div>
     );

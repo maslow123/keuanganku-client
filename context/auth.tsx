@@ -23,7 +23,7 @@ export default function AuthProvider({ children }) {
 
             if (token) {                
                 if (userData) {
-                    setUser(userData);
+                    setUser({ ...userData });
                     
                     if (['/login', '/register'].includes(router.pathname)) {
                         router.push('/dashboard');

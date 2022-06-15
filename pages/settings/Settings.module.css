@@ -30,9 +30,9 @@
 }
 
 .middle {
-    @apply opacity-0 absolute text-center;
+    @apply opacity-0 absolute text-center  md:top-1/4 xs:!top-60;
     transition: .5s ease;
-    left: 9.7%;
+    left: 100px;
     top: 24%;
     transform: translate(-50%, -50%);
     -ms-transform: translate(-50%, -50%);
@@ -45,8 +45,6 @@
 .avatar:hover .middle {
     @apply opacity-100;
 }
-
-
 
 .text {
     @apply cursor-pointer py-4 px-8 text-lg text-black bg-transparent

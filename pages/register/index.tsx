@@ -10,7 +10,7 @@ import { hasError, validate } from 'util/helper';
 import { images } from 'util/images';
 import s from './Register.module.css';
 
-export default function Login() {
+export default function Register() {
     const [payload, setPayload] = useState<RegisterRequest>({
         name: '',
         email: '',
@@ -111,12 +111,12 @@ export default function Login() {
                     <div className={s.image}>  
                         <Image
                             className={s.placeholderImage}
-                            alt="login"
+                            alt="register"
                             src={images.login}
                             layout="intrinsic"
                             quality={100}
-                            width={500}
-                            height={500}
+                            width={250}
+                            height={250}
                         />
                     </div>
                     <div className={s.caption}>
@@ -130,7 +130,7 @@ export default function Login() {
                     </div>
                     <div className={s.welcomeWrapper}>
                         <span className={s.welcomeText}>Daftar</span>                
-                        <div className={s.loginFormWrapper}>      
+                        <div className={s.registerFormWrapper}>      
                             {invalid && (
                                 <Badge caption={errorMessage} color="error"/>
                             )}            
