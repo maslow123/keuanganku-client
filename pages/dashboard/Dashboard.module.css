@@ -42,7 +42,8 @@
 
 /* Transaction */
 .transactions {
-    @apply flex flex-row justify-around flex-wrap xs:flex-col;
+    @apply flex flex-row justify-around flex-wrap xs:flex-col
+        xs:my-4;
 }
 
 .section {

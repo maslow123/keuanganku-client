@@ -80,7 +80,6 @@ export default function Settings() {
         email: ctx?.user?.email
     });
 
-    console.log(updateProfilePayload);
     const [changePasswordPayload, setChangePasswordPayload] = useState<ChangePasswordRequest>({
         old_password: '',
         password: '',
