@@ -95,10 +95,10 @@ export default function Login() {
                             className={s.placeholderImage}
                             alt="login"
                             src={images.login}
-                            layout="intrinsic"
                             quality={100}
-                            width={250}
-                            height={250}
+                            layout="intrinsic"
+                            width={300}
+                            height={300}
                         />
                     </div>
                     <div className={s.caption}>

@@ -115,8 +115,8 @@ export default function Register() {
                             src={images.login}
                             layout="intrinsic"
                             quality={100}
-                            width={250}
-                            height={250}
+                            width={300}
+                            height={300}
                         />
                     </div>
                     <div className={s.caption}>
