@@ -34,7 +34,7 @@ export default function Dashboard() {
     }, []);
 
     const fetchTransactionData = async () => {   
-        const query: ListTransactionRequest = { page: 1, limit: 5, action: 0, startDate: 0, endDate: 0 };
+        const query: ListTransactionRequest = { page: 1, limit: 5, action: 2, startDate: 0, endDate: 0 };
         const data = await list(query);
 
         if (data.status === status.OK) {
