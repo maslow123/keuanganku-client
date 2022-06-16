@@ -46,3 +46,14 @@ export interface CreateTransactionRequest {
 export interface CreateTransactionResponse extends GenericResponse {
     id: number;
 };
+
+export interface GetExpenditureRequest {
+    start_date: string;
+    end_date: string;
+};
+
+export interface GetExpenditureResponse extends GenericResponse {
+    today_expeses: number;
+    other_day_expenses: number;
+    percentage: number;
+};

@@ -4,9 +4,9 @@ import { images } from "@util/images";
 import { LogoutIcon } from "@heroicons/react/outline";
 import { Tabs } from '@components/ui';
 import { FirstTab, HistoryTransaction } from './components';
-import { detail, list } from 'services/transactions';
+import { detail, getExpenditure, list } from 'services/transactions';
 import { status } from '@lib/constants';
-import { DetailTransactionResponse, ListTransactionRequest, ListTransactionResponse } from 'services/types/transactions';
+import { DetailTransactionResponse, GetExpenditureRequest, GetExpenditureResponse, ListTransactionRequest, ListTransactionResponse } from 'services/types/transactions';
 import { user } from 'services/balance';
 import { useAuth } from 'context/auth';
 import { getPartOfDay, logout, showToast } from '@util/helper';
@@ -23,10 +23,12 @@ export default function Dashboard() {
     const [_, setBalanceNotFound] = useState<boolean>(false);
     const [detailModalVisible, setDetailModalVisible] = useState<boolean>(false);
     const [transactionDetail, setTransactionDetail] = useState<DetailTransactionResponse>();
+    const [userExpenses, setUserExpenses] = useState<GetExpenditureResponse>();
 
     useEffect(() => {     
         fetchTransactionData();
         fetchUserBalance();
+        fetchUserExpenses();
 
         return;
     }, []);
@@ -41,6 +43,7 @@ export default function Dashboard() {
         }
         setTransactionNotFound(true);
     };
+
     const fetchUserBalance = async () => {   
         const data = await user();
         if (data.status === status.OK) {
@@ -49,6 +52,20 @@ export default function Dashboard() {
         }
         setBalanceNotFound(true);
     };
+
+    const fetchUserExpenses = async () => {
+        const today = new Date().toISOString().split('T')[0];
+        let yesterday: any = new Date().setDate(new Date().getDate() - 1);
+        yesterday = new Date(yesterday).toISOString().split('T')[0];
+        
+        const query: GetExpenditureRequest = {
+            start_date: today,
+            end_date: yesterday
+        };
+
+        const data = await getExpenditure(query);     
+        setUserExpenses(data);
+    }
     
     const detailTransaction = async (showDetail, transactionId) => {
         setDetailModalVisible(showDetail);
@@ -101,7 +118,11 @@ export default function Dashboard() {
                 <div className={s.tab}>
                     <>                    
                         <Tabs 
-                            tabs={[<FirstTab key={0} balances={balanceList || []}/>]} 
+                            tabs={
+                                [
+                                    <FirstTab key={0} balances={balanceList || []} expenditure={userExpenses}/>
+                                ]
+                            } 
                             titles={['Personal Balance']}
                             handleChangeTab={() => {}}
                         />

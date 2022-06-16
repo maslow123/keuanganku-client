@@ -1,12 +1,51 @@
-import { ClockIcon, TrendingUpIcon } from '@heroicons/react/outline';
+import { ChevronDownIcon, ChevronUpIcon, ClockIcon, TrendingUpIcon } from '@heroicons/react/outline';
 import { formatMoney } from '@util/helper';
+import { ReactElement } from 'react';
+import { transaction_type } from '@lib/constants';
+import { Tooltip } from '@components/ui';
 import classNames from 'classnames';
 import Link from 'next/link';
-import { ReactElement } from 'react';
 import s from './../Dashboard.module.css';
-import { transaction_type } from '@lib/constants';
 
-const FirstTab = ({ balances }): ReactElement => {
+const renderText = (today_expenses, other_day_expenses, percentage): string => {
+    if (percentage > 0) {
+        return `Hebat!, kamu telah menghemat sebesar ${formatMoney(other_day_expenses - today_expenses)} hari ini.`;
+    } else if (percentage < 0) {
+        return `Kamu telah boros sebesar ${formatMoney(today_expenses - other_day_expenses)} hari ini. Ayo lebih hemat lagi.`;
+    }
+
+    return '';
+};
+
+const percentageColor = (percentage): string => {
+    if (percentage < 0) {
+        return 'text-orange-600';
+    } else if (percentage > 0) {
+        return 'text-green';
+    } 
+    return '';
+};
+
+const iconPercentage = (percentage): JSX.Element  => {
+    if (percentage < 0) {
+        return <ChevronDownIcon className="h-5 w-5"/>
+    } else if (percentage > 0) {
+        return <ChevronUpIcon className="h-5 w-5"/>
+    } 
+    return null;
+};
+
+const FirstTab = ({ balances, expenditure }): ReactElement => {
+    let text = '';
+    let textColor = '';
+    let icon = null;
+    if (expenditure) {
+        const { today_expenses, other_day_expenses, percentage } = expenditure;
+        text = renderText(today_expenses, other_day_expenses, percentage);
+        textColor = percentageColor(percentage);
+        icon = iconPercentage(percentage);
+    }
+
     const items: Record<any, any> = [        
         {
             name: 'Transaction',
@@ -26,13 +65,23 @@ const FirstTab = ({ balances }): ReactElement => {
         }
     ];
 
-    const totalBalance = (balances[0]?.total + balances[1]?.total) || 0;
+    const totalBalance = (balances[0]?.total + balances[1]?.total) || 0; 
     return (
         <>
-            <div className={s.amount}>
-                <span className={s.currency}>Rp. </span>
-                <span className={s.balance}>{formatMoney(totalBalance, false)}</span>
-            </div>            
+            <div className={s.info}>
+                <div className={s.amount}>
+                    <span className={s.currency}>Rp. </span>
+                    <span className={s.balance}>{formatMoney(totalBalance, false)}</span>                    
+                </div>
+                {expenditure?.percentage > 0 && (
+                    <Tooltip text={text}>
+                        <div className={`${s.percentage} ${textColor}`}>
+                            {icon}
+                            <span className="px-2 text-xs">{expenditure?.percentage.toFixed(2) || 0}%</span>
+                        </div>
+                    </Tooltip>
+                )}
+            </div>
 
             {balances?.length > 0 && balances.map((item, key) => (
                 <div key={key}>

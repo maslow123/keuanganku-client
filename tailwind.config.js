@@ -64,7 +64,7 @@ module.exports = {
         // red: 'var(--red)',
         
         'red': '#FFC2C7',
-        'green': '#B6E5D8',
+        'green': '#15BE6D',
         'yellow': '#FBE5C8',
         'blue': '#8FDDE7',
         rose: '#F7D4E0',

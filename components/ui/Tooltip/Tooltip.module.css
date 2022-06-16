@@ -1,0 +1,22 @@
+
+.tooltip .tooltipText {
+    @apply text-xs;
+    visibility: hidden;
+    width: 200px;
+    background-color: rgba(0, 0, 0, 0.8);;
+    color: white; 
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    z-index: 1;
+    opacity: 0;
+    transition: opacity 0.3s;
+    position: absolute;
+}
+
+.tooltip:hover .tooltipText {
+    @apply px-3 py-3;
+    visibility: visible;
+    opacity: 1;
+    
+}

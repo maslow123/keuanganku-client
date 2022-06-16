@@ -36,8 +36,16 @@
 }
 
 /* First tab */
+.info {
+    @apply flex flex-row
+        xs:flex-col;
+}
 .balance {
     @apply text-3xl font-bold
+}
+.percentage {
+    @apply flex flex-row items-center px-5 py-2 w-24
+        xs:px-0;
 }
 
 /* Transaction */

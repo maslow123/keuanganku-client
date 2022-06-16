@@ -1,8 +1,8 @@
-import React, { ChangeEvent, FormEvent, useEffect, useRef, useState } from 'react';
+import React, { ChangeEvent, FormEvent, useRef, useState } from 'react';
 import { Header, Layout } from "@components/common";
 import { PencilIcon, KeyIcon, IdentificationIcon, LogoutIcon } from "@heroicons/react/outline";
 import { images } from "@util/images";
-import { Card, Form } from "@components/ui";
+import { Card, Form, Spinner } from "@components/ui";
 import { useAuth } from "context/auth";
 import { useRouter } from "next/router";
 import { hasError, logout, showToast, validate } from "@util/helper";
@@ -12,7 +12,6 @@ import { ChangePasswordRequest, UpdateRequest } from 'services/types/users';
 import { changePassword, updateUser, uploadImage } from 'services/users';
 import { Loading } from './types';
 import Image from "next/image";
-import Spinner from '@components/ui/Spinner';
 import s from "./Settings.module.css";
 import Cookies from 'js-cookie';
 
