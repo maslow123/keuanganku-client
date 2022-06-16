@@ -73,7 +73,7 @@ const FirstTab = ({ balances, expenditure }): ReactElement => {
                     <span className={s.currency}>Rp. </span>
                     <span className={s.balance}>{formatMoney(totalBalance, false)}</span>                    
                 </div>
-                {expenditure?.percentage > 0 && (
+                {expenditure?.percentage !== 0 && (
                     <Tooltip text={text}>
                         <div className={`${s.percentage} ${textColor}`}>
                             {icon}

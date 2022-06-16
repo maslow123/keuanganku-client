@@ -44,7 +44,7 @@
     @apply text-3xl font-bold
 }
 .percentage {
-    @apply flex flex-row items-center px-5 py-2 w-24
+    @apply flex flex-row items-center px-5 py-2
         xs:px-0;
 }
 
