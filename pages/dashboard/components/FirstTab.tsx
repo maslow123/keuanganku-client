@@ -2,16 +2,16 @@ import { ChevronDownIcon, ChevronUpIcon, ClockIcon, TrendingUpIcon } from '@hero
 import { formatMoney } from '@util/helper';
 import { ReactElement } from 'react';
 import { transaction_type } from '@lib/constants';
-import { Tooltip } from '@components/ui';
+import { Loader, Tooltip } from '@components/ui';
 import classNames from 'classnames';
 import Link from 'next/link';
 import s from './../Dashboard.module.css';
 
 const renderText = (today_expenses, other_day_expenses, percentage): string => {
     if (percentage > 0) {
-        return `Hebat!, kamu telah menghemat sebesar ${formatMoney(other_day_expenses - today_expenses)} hari ini.`;
+        return `Hemat sebesar ${formatMoney(other_day_expenses - today_expenses)} hari ini.`;
     } else if (percentage < 0) {
-        return `Kamu telah boros sebesar ${formatMoney(today_expenses - other_day_expenses)} hari ini. Ayo lebih hemat lagi.`;
+        return `Boros sebesar ${formatMoney(today_expenses - other_day_expenses)} hari ini.`;
     }
 
     return '';
@@ -71,26 +71,34 @@ const FirstTab = ({ balances, expenditure }): ReactElement => {
             <div className={s.info}>
                 <div className={s.amount}>
                     <span className={s.currency}>Rp. </span>
-                    <span className={s.balance}>{formatMoney(totalBalance, false)}</span>                    
+                    <span className={s.balance}>{
+                        balances.length > 0
+                        ? formatMoney(totalBalance, false) 
+                        : <Loader count={1} width={100} />
+                    }</span>                    
                 </div>
                 {expenditure?.percentage !== 0 && (
                     <Tooltip text={text}>
                         <div className={`${s.percentage} ${textColor}`}>
                             {icon}
-                            <span className="px-2 text-xs">{expenditure?.percentage.toFixed(2) || 0}%</span>
+                            <label className="px-2 text-xs">{expenditure?.percentage.toFixed(2) || 0}%</label>
                         </div>
                     </Tooltip>
                 )}
             </div>
-
-            {balances?.length > 0 && balances.map((item, key) => (
-                <div key={key}>
-                    <label className='text-sm'>
-                        <span className='font-bold'>{transaction_type[item.type]}</span>: 
-                        <span className='pl-1'>{formatMoney(item.total)}</span>
-                    </label>
-                </div>
-            ))}
+            
+            {balances?.length > 0
+            ? 
+                balances.map((item, key) => (
+                    <div key={key}>
+                        <label className='text-sm'>
+                            <span className='font-bold'>{transaction_type[item.type]}</span>: 
+                            <span className='pl-1'>{formatMoney(item.total)}</span>
+                        </label>
+                    </div>
+                ))
+            : <Loader count={2} width={100} />
+        }
 
             <div className={s.transactions}>
                 {items.length > 0 && items.map((item, i) => (

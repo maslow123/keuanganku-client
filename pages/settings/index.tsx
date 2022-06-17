@@ -112,7 +112,6 @@ export default function Settings() {
 
         const func = formType === 'profile' ? updateUser : changePassword;
         setPasswordNotMatch(false);
-
         setInvalidEmailFormat(false);
 
         let error = '';
@@ -133,9 +132,7 @@ export default function Settings() {
         const resp: any = await func(payload);
         setLoading(key, false);
 
-        let isValid = false;
-        if (resp.status !== status.OK) {
-            isValid = true;
+        if (resp.status !== status.OK) {            
             error = resp.error;
             showToast('error', resp.error);
         }
@@ -151,8 +148,10 @@ export default function Settings() {
             };
             ctx.setUser({ ...user });
             Cookies.set('user', JSON.stringify(user));
+            return true;
         }
 
+        resetChangePasswordPayload();
         return true;   
     };
     const _handleChange = (evt: ChangeEvent<HTMLInputElement>): void => {
@@ -238,6 +237,17 @@ export default function Settings() {
         setChangePasswordPayload({ ...changePasswordPayload });
     };
 
+    const _renderTextSubmit = () => {
+        if ((formType === 'profile' && isLoading.changeProfile) || (formType !== 'profile' && isLoading.changePassword)) {
+            return 'Loading' 
+        }
+        return 'Save Changes';
+    };
+
+    const _renderDisableButton = () => {
+        return (formType === 'profile' && isLoading.changeProfile) || (formType !== 'profile' && isLoading.changePassword);
+    };
+
     return (
         <Layout>            
             <Header title="Settings"/>
@@ -318,12 +328,13 @@ export default function Settings() {
                 </div>
 
                 <Modal
-                    title="Edit Profile"
+                    title={formType === 'profile' ? 'Edit Profile' : 'Change Password'}
                     isVisible={visible}
                     handleCloseButton={_handleCloseModal}
                     handleSubmit={_handleSubmit}
-                    textSubmit="Save changes"
+                    textSubmit={_renderTextSubmit()}
                     scrollview={true}
+                    disabled={_renderDisableButton()}
 
                 >
                     {renderForm()}

@@ -7,3 +7,4 @@ export { default as Modal } from './Modal';
 export { default as Datepicker } from './Datepicker';
 export { default as Tooltip } from './Tooltip';
 export { default as Spinner } from './Spinner';
+export { default as Loader } from './Loader';

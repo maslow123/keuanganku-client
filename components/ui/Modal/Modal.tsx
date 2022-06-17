@@ -2,6 +2,7 @@ import React, { FC, FormEventHandler, ReactNode } from 'react';
 import s from './Modal.module.css';
 
 interface Props {
+    disabled?: boolean;
     isVisible: boolean;
     handleCloseButton: Function;
     title: string;
@@ -12,7 +13,7 @@ interface Props {
     scrollview?: boolean;
 }
 
-const Modal: FC<Props> = ({ isVisible, handleCloseButton, title, children, handleSubmit, textSubmit, autoWidth, scrollview }) => {    
+const Modal: FC<Props> = ({ isVisible, handleCloseButton, title, children, handleSubmit, textSubmit, autoWidth, scrollview, disabled }) => {    
     return (
         <>        
             {isVisible ? (
@@ -52,6 +53,7 @@ const Modal: FC<Props> = ({ isVisible, handleCloseButton, title, children, handl
                             </button>
                             {textSubmit && (
                                 <button
+                                    disabled={disabled}
                                     className="bg-blue-theme text-white font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                                     type="submit"
                                 >

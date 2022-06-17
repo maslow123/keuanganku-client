@@ -1,6 +1,6 @@
 
 .tooltip .tooltipText {
-    @apply text-xs;
+    @apply text-xs cursor-pointer;
     visibility: hidden;
     width: 200px;
     background-color: rgba(0, 0, 0, 0.8);;

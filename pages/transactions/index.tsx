@@ -9,7 +9,6 @@ import { list as listPos } from "services/pos";
 import { CreateTransactionRequest, DetailTransactionResponse, ListTransactionRequest, ListTransactionResponse } from "services/types/transactions";
 import { useRouter } from "next/router";
 import s from './Transactions.module.css';
-import { DocumentTextIcon } from '@heroicons/react/outline';
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import { PDF } from "./components";
 import { ToastOptions } from "react-toastify";
@@ -46,7 +45,9 @@ export default function Transaction() {
 
     const [isLoading, setIsLoading] = useState<Record<any, any>>({
         fetchTransaction: true,
-        fetchPos: true
+        fetchPos: true,
+        createTransaction: false,
+        deleteTransaction: false
     });
     const [errorList, setErrorList] = useState<string[]>(null);
     const [isVisible, setIsVisible] = useState<boolean>(Boolean(router?.query?.showModal) || false);
@@ -266,11 +267,13 @@ export default function Transaction() {
     };
 
     const onDeleteTransaction = async (transactionId: number) => {
+        setIsLoading({ ...isLoading, deleteTransaction: true });
         const data = await deleteTransaction(transactionId);        
         if (data.status !== status.OK) {
             showToast('error', data.error);
             return
         }
+        setIsLoading({ ...isLoading, deleteTransaction: true });
         showToast('success', 'Data successfully deleted');
         const { dataList, setDataList } = getCurrentTabData(action);
         dataList.transaction = dataList.transaction.filter(item => item.id !== transactionId);
@@ -289,7 +292,8 @@ export default function Transaction() {
         if (transactionNotFound && q.page > 1) {             
             setNotFound(false);
         }
-
+        
+        setIsLoading({ ...isLoading, createTransaction: true });
         const resp = await create(payload);
         if (resp.status === status.Created) {
             setInserted(inserted + 1);
@@ -297,7 +301,8 @@ export default function Transaction() {
             setIsVisible(false);
             resetPayload();
             fetchDataTransaction(isLoading, q, true, false);
-        }
+        }        
+        setIsLoading({ ...isLoading, createTransaction: false });
 
         return true;
     };
@@ -524,8 +529,9 @@ export default function Transaction() {
                     isVisible={isVisible}
                     handleCloseButton={_handleCloseButton} 
                     handleSubmit={_handleSubmit}
-                    textSubmit={'Save changes'}
+                    textSubmit={isLoading.createTransaction ? 'Loading' : 'Save changes'}
                     scrollview={true}
+                    disabled={isLoading.createTransaction}
                 >
                     {form.map((item, key) => (
                         <Form

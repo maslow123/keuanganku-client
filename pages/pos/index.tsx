@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import s from './Pos.module.css'
 import { Header, Layout } from '@components/common';
 import { RefreshIcon, TrashIcon, PencilIcon } from '@heroicons/react/outline';
-import { Card, FAB, Form, Modal, Tabs } from '@components/ui';
+import { Card, FAB, Form, Loader, Modal, Tabs } from '@components/ui';
 import { formatMoney, hasError, showToast, validate } from '@util/helper';
 import { pos_type, status } from '@lib/constants';
 import { Colors } from '@lib/colors';
@@ -286,7 +286,10 @@ export default function Pos() {
             {notFound && (data === null || data.length < 1) 
             ? <>Data not found</>
             :
-                data?.pos?.length > 0 && data.pos.map((pos, key) => (
+                data?.pos?.length > 0 
+                
+                ? 
+                    data.pos.map((pos, key) => (
                     <Card color={pos.color} key={key}>
                         <div className={s.posIdentity}>
                             <div className={s.posName}>{pos.name}</div>
@@ -309,7 +312,9 @@ export default function Pos() {
                             ))}
                         </div>
                     </Card>
-                ))}
+                    ))
+                : <Loader height={50} count={5} className={"my-2"}/>
+                }
                 {!notFound && data?.pos?.length >= 10 && (
                     <div className={s.loadButtonWrapper}>
                         <button className={s.loadButton} onClick={_handleLoadMoreData}>
@@ -347,7 +352,8 @@ export default function Pos() {
                         isVisible={isVisible}
                         handleCloseButton={_handleCloseButton} 
                         handleSubmit={_handleSubmit}
-                        textSubmit={'Save changes'}
+                        textSubmit={isLoading.create ? 'Loading' : 'Save changes'}
+                        disabled={isLoading.create}
                     >
                         {form.map((item, key) => (
                             <Form
@@ -366,12 +372,13 @@ export default function Pos() {
                         ))}                                                                
                     </Modal>   
 
-                        <Modal 
+                    <Modal 
                         title="Delete POS" 
                         isVisible={modalDeleteVisible}
                         handleCloseButton={(visible) => setModalDeleteVisible(visible)} 
                         handleSubmit={doDeletePos}
-                        textSubmit={'Delete'}
+                        textSubmit={isLoading.delete ? 'Loading' : 'Delete' }
+                        disabled={isLoading.delete}
                     >
                         Are you sure?
                     </Modal>                        
