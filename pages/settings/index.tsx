@@ -201,7 +201,7 @@ export default function Settings() {
         }
     }
     
-    const renderForm = () => {
+    const _renderForm = () => {
         const form = formType === 'profile' ? updateProfileForm : changePasswordForm;
         const payload = formType === 'profile' ? updateProfilePayload : changePasswordPayload;
 
@@ -337,7 +337,7 @@ export default function Settings() {
                     disabled={_renderDisableButton()}
 
                 >
-                    {renderForm()}
+                    {_renderForm()}
                 </Modal>
             </div>
         </Layout>
