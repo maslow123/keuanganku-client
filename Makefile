@@ -1,5 +1,8 @@
+pull_image:
+	docker-compose pull app
+
 buildapp:
 	docker-compose build app
 
-runapp: buildapp
+runapp: pull_image
 	docker-compose up -d --force-recreate app
