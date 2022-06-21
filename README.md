@@ -8,7 +8,7 @@
     ```
     make runapp
     ```
-- Make sure the service is running properly, as follows:
+- Make sure application is running properly, as follows:
     ```
     $ docker ps
     CONTAINER ID   IMAGE                                      COMMAND                  CREATED          STATUS          PORTS                      NAMES
