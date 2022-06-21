@@ -1,4 +1,4 @@
-import s from './../Dashboard.module.css';
+import s from './Dashboard.module.css';
 import { EyeIcon, RefreshIcon, TrashIcon } from '@heroicons/react/outline';
 import { ellipsisText, formatDate, formatMoney } from '@util/helper';
 import { transaction_type } from '@lib/constants';

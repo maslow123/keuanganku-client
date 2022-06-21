@@ -5,7 +5,7 @@ import { transaction_type } from '@lib/constants';
 import { Loader, Tooltip } from '@components/ui';
 import classNames from 'classnames';
 import Link from 'next/link';
-import s from './../Dashboard.module.css';
+import s from './Dashboard.module.css';
 
 const renderText = (today_expenses, other_day_expenses, percentage): string => {
     if (percentage > 0) {

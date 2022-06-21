@@ -2,7 +2,7 @@ import { Header, Layout } from "@components/common";
 import { Datepicker, FAB, Form, Modal, Tabs } from "@components/ui";
 import { status, transaction_action } from "@lib/constants";
 import { formatDate, formatMoney, getPDFTitle, hasError, showToast, validate } from "@util/helper";
-import { HistoryTransaction } from "pages/dashboard/components";
+import { HistoryTransaction } from "@components/dashboard";
 import { useEffect, useState } from "react";
 import { create, deleteTransaction, detail, list } from "services/transactions";
 import { list as listPos } from "services/pos";
@@ -10,8 +10,8 @@ import { CreateTransactionRequest, DetailTransactionResponse, ListTransactionReq
 import { useRouter } from "next/router";
 import s from './Transactions.module.css';
 import { PDFDownloadLink } from "@react-pdf/renderer";
-import { PDF } from "./components";
 import { ToastOptions } from "react-toastify";
+import { PDF } from "@components/transactions";
 
 export default function Transaction() {   
     const router = useRouter();

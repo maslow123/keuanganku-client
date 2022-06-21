@@ -1,14 +1,13 @@
 import { transaction_type } from "@lib/constants";
 import { formatDate, formatMoney } from "@util/helper";
-import { FC } from "react";
 import { DetailTransactionResponse } from "services/types/transactions";
-import s from './../Dashboard.module.css';
+import s from './Dashboard.module.css';
 
 interface Props {
     data: DetailTransactionResponse;
 };
 
-const DetailTransaction: FC<Props> = ({ data }) => {
+const DetailTransaction: React.FC<Props> = ({ data }) => {
     const transaction = data?.transaction || null;
 
     return (
