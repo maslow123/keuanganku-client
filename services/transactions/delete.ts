@@ -5,7 +5,7 @@ import { GenericResponse } from "services/types/generic";
 const deleteTransaction = async (transactionId: number): Promise<GenericResponse> => {
     try {
         getToken();
-        const data = await fetch(`http://localhost:3000/transactions/${transactionId}`, {
+        const data = await fetch(`http://localhost:8000/transactions/${transactionId}`, {
             method: 'DELETE',
             ...headers
         });

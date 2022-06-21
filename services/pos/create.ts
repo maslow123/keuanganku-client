@@ -5,7 +5,7 @@ import { CreatePosRequest, CreatePosResponse } from "services/types/pos";
 const create = async (payload: CreatePosRequest): Promise<CreatePosResponse> => {
     try {
         getToken();
-        const data = await fetch('http://localhost:3000/pos/create', {
+        const data = await fetch('http://localhost:8000/pos/create', {
             method: 'POST',
             body: JSON.stringify(payload),
             ...headers

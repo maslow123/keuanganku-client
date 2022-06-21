@@ -5,7 +5,7 @@ import { DeletePosRequest, DeletePosResponse } from "services/types/pos";
 const deletePos = async (param: DeletePosRequest): Promise<DeletePosResponse> => {
     try {
         getToken();
-        const data = await fetch(`http://localhost:3000/pos/${param.id}`, {
+        const data = await fetch(`http://localhost:8000/pos/${param.id}`, {
             method: 'DELETE',
             ...headers
         });

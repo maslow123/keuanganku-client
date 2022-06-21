@@ -3,7 +3,7 @@ import { UpdateRequest, UpdateResponse } from "services/types/users";
 
 const updateUser = async (payload: UpdateRequest): Promise<UpdateResponse> => {
     try {
-        const data = await fetch('http://localhost:3000/users/update', {
+        const data = await fetch('http://localhost:8000/users/update', {
             method: 'PUT',
             body: JSON.stringify(payload),
             ...headers

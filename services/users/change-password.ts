@@ -3,7 +3,7 @@ import { ChangePasswordRequest, ChangePasswordResponse } from "services/types/us
 
 const changePassword = async (payload: ChangePasswordRequest): Promise<ChangePasswordResponse> => {
     try {
-        const data = await fetch('http://localhost:3000/users/change-password', {
+        const data = await fetch('http://localhost:8000/users/change-password', {
             method: 'PUT',
             body: JSON.stringify(payload),
             ...headers

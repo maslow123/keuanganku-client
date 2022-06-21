@@ -2,7 +2,7 @@ import { transaction_type } from "@lib/constants";
 import { formatDate, formatMoney } from "@util/helper";
 import { FC } from "react";
 import { DetailTransactionResponse } from "services/types/transactions";
-import s from './../Dashboard.module.css';
+import s from './Dashboard.module.css';
 
 interface Props {
     data: DetailTransactionResponse;

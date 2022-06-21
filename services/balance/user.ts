@@ -5,7 +5,7 @@ import { headers } from "services/headers";
 const user = async (): Promise<any> => {
     try {
         getToken();
-        const data = await fetch(`http://localhost:3000/balance/user`, {
+        const data = await fetch(`http://localhost:8000/balance/user`, {
             method: 'GET',
             ...headers
         });

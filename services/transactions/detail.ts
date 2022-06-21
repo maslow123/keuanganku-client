@@ -6,7 +6,7 @@ import { DetailTransactionRequest, DetailTransactionResponse } from "services/ty
 const detail = async (transactionId: DetailTransactionRequest): Promise<DetailTransactionResponse> => {
     try {
         getToken();                            
-        const data = await fetch(`http://localhost:3000/transactions/detail/${transactionId}`, {
+        const data = await fetch(`http://localhost:8000/transactions/detail/${transactionId}`, {
             method: 'GET',
             ...headers
         });

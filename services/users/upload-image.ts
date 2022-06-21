@@ -9,7 +9,7 @@ const uploadImage = async (formData: FormData): Promise<UploadImageResponse> => 
           // console.log(`Current progress:`, Math.round((event.loaded * 100) / event.total));
         },
     };
-    const response: any = await axios.post('http://localhost:3000/users/upload', formData, config);
+    const response: any = await axios.post('http://localhost:8000/users/upload', formData, config);
     return response.data;
 };
 

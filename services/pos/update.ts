@@ -5,7 +5,7 @@ import { UpdatePosRequest, UpdatePosResponse } from "services/types/pos";
 const update = async (payload: UpdatePosRequest): Promise<UpdatePosResponse> => {
     try {
         getToken();
-        const data = await fetch(`http://localhost:3000/pos/${payload.id}`, {
+        const data = await fetch(`http://localhost:8000/pos/${payload.id}`, {
             method: 'PUT',
             body: JSON.stringify(payload),
             ...headers

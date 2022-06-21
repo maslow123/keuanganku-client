@@ -6,7 +6,7 @@ const create = async (payload: CreateTransactionRequest): Promise<CreateTransact
     try {
         getToken();
         payload.date = Math.floor(payload.date / 1000);
-        const data = await fetch('http://localhost:3000/transactions/create', {
+        const data = await fetch('http://localhost:8000/transactions/create', {
             method: 'POST',
             body: JSON.stringify(payload),
             ...headers

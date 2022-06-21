@@ -10,11 +10,15 @@ import { Modal } from "@components/ui";
 import { status } from '@lib/constants';
 import { ChangePasswordRequest, UpdateRequest } from 'services/types/users';
 import { changePassword, updateUser, uploadImage } from 'services/users';
-import { Loading } from './types';
 import Image from "next/image";
 import s from "./Settings.module.css";
 import Cookies from 'js-cookie';
 
+interface Loading {
+    changeProfile: boolean;
+    changePassword: boolean;
+    changeImage: boolean;
+};
 
 export default function Settings() { 
     const ctx = useAuth();

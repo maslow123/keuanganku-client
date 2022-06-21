@@ -11,7 +11,7 @@ const list = async (query: ListTransactionRequest): Promise<ListTransactionRespo
                     .replace('startDate', 'start_date')
                     .replace('endDate', 'end_date');
                     
-        const data = await fetch(`http://localhost:3000/transactions/list?${q}`, {
+        const data = await fetch(`http://localhost:8000/transactions/list?${q}`, {
             method: 'GET',
             ...headers
         });

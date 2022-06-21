@@ -3,7 +3,7 @@ import { Layout } from '@components/common';
 import { images } from "@util/images";
 import { LogoutIcon } from "@heroicons/react/outline";
 import { Tabs } from '@components/ui';
-import { FirstTab, HistoryTransaction } from './components';
+import { FirstTab, HistoryTransaction } from '@components/dashboard';
 import { detail, getExpenditure, list } from 'services/transactions';
 import { status } from '@lib/constants';
 import { DetailTransactionResponse, GetExpenditureRequest, GetExpenditureResponse, ListTransactionRequest, ListTransactionResponse } from 'services/types/transactions';
